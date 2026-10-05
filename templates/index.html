@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotex AI Signal Engine</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { background-color: #0b0e14; color: #ffffff; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 15px; margin: 0; }
+        .card { background: #151a24; padding: 20px; border-radius: 16px; border: 1px solid #232a3b; margin-top: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .signal-box { font-size: 26px; font-weight: bold; margin: 15px 0; color: #ffb300; }
+        .btn { background: #2962ff; color: white; padding: 14px 20px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; width: 100%; margin-top: 15px; cursor: pointer; }
+        .btn:active { transform: scale(0.98); }
+        .info { font-size: 13px; color: #8899a6; margin-top: 8px; line-height: 1.4; }
+        .stat { font-weight: bold; color: #00e676; }
+    </style>
+</head>
+<body>
+    <h3>📊 Quotex High-Accuracy Engine</h3>
+    <div class="card">
+        <div id="pair" style="font-weight: bold; color: #2962ff;">EUR/USD (1M)</div>
+        <div id="signal" class="signal-box">READY</div>
+        <div id="reason" class="info">রিয়েল-টাইম অ্যানালাইসিস দেখতে নিচের বাটনে চাপুন</div>
+        <div class="info" style="margin-top: 12px; border-top: 1px solid #232a3b; padding-top: 10px;">
+            Accuracy: <span id="accuracy" class="stat">--</span> | RSI: <span id="rsi" style="color:#ffffff;">--</span>
+        </div>
+    </div>
+
+    <button class="btn" onclick="getRealSignal()">GENERATE REAL SIGNAL</button>
+
+    <script>
+        window.Telegram.WebApp.ready();
+
+        async function getRealSignal() {
+            document.getElementById('signal').innerText = "ANALYZING...";
+            document.getElementById('signal').style.color = "#ffb300";
+            
+            try {
+                let res = await fetch('/api/signal');
+                let data = await res.json();
+
+                document.getElementById('pair').innerText = data.pair || "EUR/USD (1M)";
+                document.getElementById('signal').innerText = data.signal;
+                document.getElementById('reason').innerText = data.reason;
+                document.getElementById('accuracy').innerText = data.accuracy;
+                document.getElementById('rsi').innerText = data.rsi || 'N/A';
+
+                if(data.signal.includes("BUY")) {
+                    document.getElementById('signal').style.color = "#00e676";
+                } else if(data.signal.includes("SELL")) {
+                    document.getElementById('signal').style.color = "#ff5252";
+                } else {
+                    document.getElementById('signal').style.color = "#ffb300";
+                }
+            } catch(e) {
+                document.getElementById('signal').innerText = "SERVER ERROR";
+                document.getElementById('reason').innerText = "সার্ভার থেকে সাড়া পাওয়া যাচ্ছে না";
+            }
+        }
+    </script>
+</body>
+</html>
