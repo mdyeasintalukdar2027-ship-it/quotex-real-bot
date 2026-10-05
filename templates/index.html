@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotex Real AI Signal</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { background-color: #0b0e14; color: #ffffff; font-family: sans-serif; text-align: center; padding: 15px; margin: 0; }
+        .card { background: #151a24; padding: 20px; border-radius: 16px; border: 1px solid #232a3b; margin-top: 15px; }
+        .signal-box { font-size: 26px; font-weight: bold; margin: 15px 0; color: #ffb300; }
+        .btn { background: #2962ff; color: white; padding: 14px 20px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; width: 100%; margin-top: 15px; }
+        .info { font-size: 13px; color: #8899a6; margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <h3>📊 Quotex High-Accuracy Bot</h3>
+    <div class="card">
+        <div id="pair">EUR/USD (1M)</div>
+        <div id="signal" class="signal-box">READY</div>
+        <div id="reason" class="info">রিয়েল অ্যানালাইসিস শুরু করতে বাটনে চাপুন</div>
+        <div class="info" style="margin-top: 12px;">Accuracy: <span id="accuracy" style="color:#00e676;">--</span> | RSI: <span id="rsi">--</span></div>
+    </div>
+
+    <button class="btn" onclick="getRealSignal()">GENERATE REAL SIGNAL</button>
+
+    <script>
+        window.Telegram.WebApp.ready();
+
+        async function getRealSignal() {
+            document.getElementById('signal').innerText = "ANALYZING...";
+            document.getElementById('signal').style.color = "#ffb300";
+            
+            try {
+                let res = await fetch('/api/signal');
+                let data = await res.json();
+
+                if(data.status === "error") {
+                    document.getElementById('signal').innerText = "ERROR";
+                    document.getElementById('reason').innerText = data.message;
+                    return;
+                }
+
+                document.getElementById('pair').innerText = data.pair + " (1M)";
+                document.getElementById('signal').innerText = data.signal;
+                document.getElementById('reason').innerText = data.reason;
+                document.getElementById('accuracy').innerText = data.accuracy;
+                document.getElementById('rsi').innerText = data.rsi || 'N/A';
+
+                if(data.signal.includes("BUY")) {
+                    document.getElementById('signal').style.color = "#00e676";
+                } else if(data.signal.includes("SELL")) {
+                    document.getElementById('signal').style.color = "#ff5252";
+                } else {
+                    document.getElementById('signal').style.color = "#ffb300";
+                }
+            } catch(e) {
+                document.getElementById('signal').innerText = "SERVER ERROR";
+            }
+        }
+    </script>
+</body>
+</html>
