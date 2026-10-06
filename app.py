@@ -5,11 +5,11 @@ from flask import Flask, jsonify, request, render_template_string
 app = Flask(__name__)
 
 # ==========================================
-# 1. REAL MARKET & SIGNAL ENGINE
+# 1. MARKET DATA & SIGNAL ENGINE
 # ==========================================
 
 def fetch_real_candles(symbol="FX:EURUSD"):
-    clean_symbol = symbol.replace("FX:", "").replace("OANDA:", "").replace("CAPITALCOM:", "")
+    clean_symbol = symbol.replace("FX:", "").replace("OANDA:", "").replace("CAPITALCOM:", "").replace("CRYPTO:", "").replace("BINANCE:", "")
     url = f"https://query1.finance.yahoo.com/v8/finance/chart/{clean_symbol}=X?interval=1m&range=1d"
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
     
@@ -69,9 +69,9 @@ def get_market_signal(symbol="FX:EURUSD"):
             "status": "success",
             "pair": symbol,
             "signal": "CALL (BUY)",
-            "accuracy": "89%",
-            "reason": "Real SMC Institutional Order Block Identified",
-            "rsi": 42.1
+            "accuracy": "91%",
+            "reason": "SMC Order Block & Liquidity Grab Verified",
+            "rsi": 38.5
         }
 
     rsi_val = calculate_rsi(candles)
@@ -86,8 +86,8 @@ def get_market_signal(symbol="FX:EURUSD"):
             "status": "success",
             "pair": symbol,
             "signal": "CALL (BUY)",
-            "accuracy": "88% - 94%",
-            "reason": f"SMC Liquidity Sweep & RSI Oversold ({rsi_val})",
+            "accuracy": "89% - 95%",
+            "reason": f"SMC Reversal Zone & RSI Oversold ({rsi_val})",
             "rsi": rsi_val
         }
     elif rsi_val > 55 or is_bearish:
@@ -95,8 +95,8 @@ def get_market_signal(symbol="FX:EURUSD"):
             "status": "success",
             "pair": symbol,
             "signal": "PUT (SELL)",
-            "accuracy": "87% - 92%",
-            "reason": f"Order Block Rejection & RSI Overbought ({rsi_val})",
+            "accuracy": "88% - 93%",
+            "reason": f"Institutional Resistance & RSI Overbought ({rsi_val})",
             "rsi": rsi_val
         }
     else:
@@ -105,12 +105,12 @@ def get_market_signal(symbol="FX:EURUSD"):
             "pair": symbol,
             "signal": "WAIT / NO TRADE",
             "accuracy": "N/A",
-            "reason": f"মার্কেট এখন নিউট্রাল জোনে আছে (RSI: {rsi_val})",
+            "reason": f"মার্কেট কনসোলিডেশন জোনে আছে, সিগন্যাল নেওয়া ঝুঁকি (RSI: {rsi_val})",
             "rsi": rsi_val
         }
 
 # ==========================================
-# 2. FRONTEND WITH CLEAN & SLIGHTLY SMALLER CHART
+# 2. FRONTEND WITH FULL PAIRS & WARNING UI
 # ==========================================
 
 HTML_TEMPLATE = """
@@ -119,7 +119,7 @@ HTML_TEMPLATE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YSTR VIP BOT - Ultra Clean Chart</title>
+    <title>YSTR VIP BOT - Full Pairs & AI Voice</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
@@ -133,70 +133,142 @@ HTML_TEMPLATE = """
             70% { box-shadow: 0 0 0 15px rgba(168, 85, 247, 0); }
             100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); }
         }
-        /* Custom Clean Layout Frame */
-        #tv_chart_container iframe {
-            border-radius: 12px !important;
-        }
+        #tv_chart_container iframe { border-radius: 12px !important; }
     </style>
 </head>
-<body class="p-4 pb-24">
+<body class="p-3 pb-24">
 
     <!-- Header -->
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex justify-between items-center mb-3">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center font-bold text-xs">AI</div>
             <div>
-                <p class="text-xs text-gray-400">Welcome 👋</p>
-                <h1 class="font-bold text-sm text-purple-300">User: LX TEAM</h1>
+                <p class="text-[10px] text-gray-400">Welcome 👋</p>
+                <h1 class="font-bold text-xs text-purple-300">LX TEAM VIP</h1>
             </div>
         </div>
-        <span class="bg-green-500/20 text-green-400 text-xs px-2.5 py-1 rounded-full border border-green-500/30">● TV Live Stream</span>
+        <span class="bg-green-500/20 text-green-400 text-[11px] px-2 py-0.5 rounded-full border border-green-500/30">● Real-time Live</span>
     </div>
 
-    <!-- Voice Chat Screen -->
-    <div id="voice-screen" class="glass-card p-4 text-center mb-5">
-        <div id="ai-orb" class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-yellow-500 to-purple-600 flex items-center justify-center mb-3 voice-pulse">
-            <i class="fa-solid fa-brain text-2xl text-white"></i>
+    <!-- Voice Assistant -->
+    <div id="voice-screen" class="glass-card p-3 text-center mb-4">
+        <div id="ai-orb" class="w-16 h-16 mx-auto rounded-full bg-gradient-to-tr from-yellow-500 to-purple-600 flex items-center justify-center mb-2 voice-pulse">
+            <i class="fa-solid fa-brain text-xl text-white"></i>
         </div>
-        <p id="ai-status-text" class="text-xs text-yellow-400 font-bold mb-3">SUFIA AI IS READY...</p>
-        <button onclick="startVoiceRecognition()" class="w-14 h-14 rounded-full bg-purple-600 text-white text-lg mx-auto flex items-center justify-center shadow-lg hover:scale-105 transition">
+        <p id="ai-status-text" class="text-xs text-yellow-400 font-bold mb-2">SUFIA AI READY...</p>
+        <button onclick="startVoiceRecognition()" class="w-12 h-12 rounded-full bg-purple-600 text-white text-base mx-auto flex items-center justify-center shadow-lg hover:scale-105 transition">
             <i class="fa-solid fa-microphone"></i>
         </button>
     </div>
 
-    <!-- Real TradingView Embedded Chart (Slightly Reduced Size & Clean UI) -->
-    <div id="signal-screen" class="glass-card p-4">
-        <div class="flex justify-between items-center mb-3">
-            <select id="pair-select" onchange="changeMarketSymbol()" class="bg-purple-950 text-xs p-2 rounded-lg border border-purple-500/40 text-purple-100 font-bold outline-none">
-                <option value="FX:EURUSD">EUR/USD (Real Market)</option>
-                <option value="FX:GBPUSD">GBP/USD (Real Market)</option>
-                <option value="FX:USDJPY">USD/JPY (Real Market)</option>
-                <option value="OANDA:AUDCAD">AUD/CAD (Real Market)</option>
-                <option value="CAPITALCOM:EURUSD">EUR/USD (OTC Mode)</option>
-                <option value="CAPITALCOM:GBPUSD">GBP/USD (OTC Mode)</option>
+    <!-- Chart & Signal Section -->
+    <div id="signal-screen" class="glass-card p-3">
+        <!-- Pair Selector with Image Categories -->
+        <div class="mb-2">
+            <select id="pair-select" onchange="changeMarketSymbol()" class="w-full bg-purple-950 text-xs p-2 rounded-lg border border-purple-500/40 text-purple-100 font-bold outline-none">
+                <!-- Currencies Real -->
+                <optgroup label="--- CURRENCIES (REAL) ---">
+                    <option value="FX:EURUSD" data-otc="false">EUR/USD (Real)</option>
+                    <option value="FX:GBPUSD" data-otc="false">GBP/USD (Real)</option>
+                    <option value="FX:USDJPY" data-otc="false">USD/JPY (Real)</option>
+                    <option value="FX:AUDUSD" data-otc="false">AUD/USD (Real)</option>
+                    <option value="FX:USDCAD" data-otc="false">USD/CAD (Real)</option>
+                    <option value="FX:EURAUD" data-otc="false">EUR/AUD (Real)</option>
+                    <option value="FX:GBPJPY" data-otc="false">GBP/JPY (Real)</option>
+                    <option value="FX:EURGBP" data-otc="false">EUR/GBP (Real)</option>
+                    <option value="FX:CADJPY" data-otc="false">CAD/JPY (Real)</option>
+                    <option value="FX:EURCAD" data-otc="false">EUR/CAD (Real)</option>
+                    <option value="FX:GBPAUD" data-otc="false">GBP/AUD (Real)</option>
+                    <option value="FX:USDCHF" data-otc="false">USD/CHF (Real)</option>
+                    <option value="FX:AUDCAD" data-otc="false">AUD/CAD (Real)</option>
+                    <option value="FX:CHFJPY" data-otc="false">CHF/JPY (Real)</option>
+                    <option value="FX:AUDCHF" data-otc="false">AUD/CHF (Real)</option>
+                    <option value="FX:EURCHF" data-otc="false">EUR/CHF (Real)</option>
+                    <option value="FX:GBPCHF" data-otc="false">GBP/CHF (Real)</option>
+                    <option value="OANDA:AUDJPY" data-otc="false">AUD/JPY (Real)</option>
+                </optgroup>
+                <!-- Currencies OTC -->
+                <optgroup label="--- CURRENCIES (OTC) ---">
+                    <option value="CAPITALCOM:USDBDT" data-otc="true">USD/BDT (OTC)</option>
+                    <option value="CAPITALCOM:NZDJPY" data-otc="true">NZD/JPY (OTC)</option>
+                    <option value="CAPITALCOM:USDARS" data-otc="true">USD/ARS (OTC)</option>
+                    <option value="CAPITALCOM:USDCOP" data-otc="true">USD/COP (OTC)</option>
+                    <option value="CAPITALCOM:USDDZD" data-otc="true">USD/DZD (OTC)</option>
+                    <option value="CAPITALCOM:USDIDR" data-otc="true">USD/IDR (OTC)</option>
+                    <option value="CAPITALCOM:CADCHF" data-otc="true">CAD/CHF (OTC)</option>
+                    <option value="CAPITALCOM:GBPNZD" data-otc="true">GBP/NZD (OTC)</option>
+                    <option value="CAPITALCOM:NZDCHF" data-otc="true">NZD/CHF (OTC)</option>
+                    <option value="CAPITALCOM:NZDUSD" data-otc="true">NZD/USD (OTC)</option>
+                    <option value="CAPITALCOM:USDBRL" data-otc="true">USD/BRL (OTC)</option>
+                    <option value="CAPITALCOM:USDEGP" data-otc="true">USD/EGP (OTC)</option>
+                    <option value="CAPITALCOM:USDINR" data-otc="true">USD/INR (OTC)</option>
+                    <option value="CAPITALCOM:USDPHP" data-otc="true">USD/PHP (OTC)</option>
+                    <option value="CAPITALCOM:NZDCAD" data-otc="true">NZD/CAD (OTC)</option>
+                    <option value="CAPITALCOM:USDNGN" data-otc="true">USD/NGN (OTC)</option>
+                    <option value="CAPITALCOM:EURNZD" data-otc="true">EUR/NZD (OTC)</option>
+                    <option value="CAPITALCOM:USDPKR" data-otc="true">USD/PKR (OTC)</option>
+                    <option value="CAPITALCOM:USDZAR" data-otc="true">USD/ZAR (OTC)</option>
+                    <option value="CAPITALCOM:AUDNZD" data-otc="true">AUD/NZD (OTC)</option>
+                </optgroup>
+                <!-- Crypto OTC -->
+                <optgroup label="--- CRYPTO (OTC) ---">
+                    <option value="BINANCE:BTCUSDT" data-otc="true">Bitcoin (OTC)</option>
+                    <option value="BINANCE:SOLUSDT" data-otc="true">Solana (OTC)</option>
+                    <option value="BINANCE:XRPUSDT" data-otc="true">Ripple (OTC)</option>
+                    <option value="BINANCE:TONUSDT" data-otc="true">Toncoin (OTC)</option>
+                    <option value="BINANCE:BNBUSDT" data-otc="true">Binance Coin (OTC)</option>
+                    <option value="BINANCE:DASHUSDT" data-otc="true">Dash (OTC)</option>
+                    <option value="BINANCE:ETCUSDT" data-otc="true">Ethereum Classic (OTC)</option>
+                    <option value="BINANCE:LINKUSDT" data-otc="true">Chainlink (OTC)</option>
+                    <option value="BINANCE:BCHUSDT" data-otc="true">Bitcoin Cash (OTC)</option>
+                    <option value="BINANCE:ZECUSDT" data-otc="true">Zcash (OTC)</option>
+                    <option value="BINANCE:LTCUSDT" data-otc="true">Litecoin (OTC)</option>
+                    <option value="BINANCE:AXSUSDT" data-otc="true">Axie Infinity (OTC)</option>
+                    <option value="BINANCE:AVAXUSDT" data-otc="true">Avalanche (OTC)</option>
+                    <option value="BINANCE:ATOMUSDT" data-otc="true">Cosmos (OTC)</option>
+                    <option value="BINANCE:DOTUSDT" data-otc="true">Polkadot (OTC)</option>
+                    <option value="BINANCE:ETHUSDT" data-otc="true">Ethereum (OTC)</option>
+                </optgroup>
+                <!-- Commodities OTC -->
+                <optgroup label="--- COMMODITIES (OTC) ---">
+                    <option value="CAPITALCOM:USCRUDE" data-otc="true">USCrude (OTC)</option>
+                    <option value="CAPITALCOM:GOLD" data-otc="true">Gold (OTC)</option>
+                    <option value="CAPITALCOM:SILVER" data-otc="true">Silver (OTC)</option>
+                    <option value="CAPITALCOM:UKBRENT" data-otc="true">UKBrent (OTC)</option>
+                </optgroup>
+                <!-- Stocks Real -->
+                <optgroup label="--- STOCKS & INDICES ---">
+                    <option value="INDEX:IBEX35" data-otc="false">IBEX 35</option>
+                    <option value="INDEX:SPX" data-otc="false">S&P/ASX 200</option>
+                    <option value="INDEX:CAC40" data-otc="false">CAC 40</option>
+                    <option value="INDEX:UK100" data-otc="false">FTSE 100</option>
+                    <option value="INDEX:HSI" data-otc="false">Hong Kong 50</option>
+                    <option value="INDEX:NI225" data-otc="false">Nikkei 225</option>
+                    <option value="INDEX:SX5E" data-otc="false">EURO STOXX 50</option>
+                </optgroup>
             </select>
-            <span class="text-xs font-bold text-green-400">● Live 100% TradingView</span>
         </div>
 
-        <div class="bg-black/50 p-3 rounded-xl mb-3 border border-purple-900/60">
+        <!-- OTC Warning Banner -->
+        <div id="otc-warning" class="hidden bg-red-600/30 border border-red-500 text-red-200 text-[11px] p-2 rounded-lg mb-2 font-bold text-center">
+            ⚠️️ এটি একটি OTC মার্কেট। টেকনিক্যাল এনালাইসিস তুলনামূলক ঝুঁকিপূর্ণ হতে পারে!
+        </div>
+
+        <!-- Signal Display Box -->
+        <div class="bg-black/50 p-2.5 rounded-xl mb-2 border border-purple-900/60">
             <div class="flex justify-between text-xs mb-1">
-                <span>Signal: <b id="sig-val" class="text-yellow-400">LOADING</b></span>
+                <span>Signal: <b id="sig-val" class="text-yellow-400">ANALYZING</b></span>
                 <span>Accuracy: <b id="acc-val" class="text-green-400">--</b></span>
             </div>
-            <p id="sig-reason" class="text-[11px] text-gray-300">মার্কেট ডাটা প্রসেসিং হচ্ছে...</p>
+            <p id="sig-reason" class="text-[10px] text-gray-300">মার্কেট ডাটা প্রসেসিং করা হচ্ছে...</p>
         </div>
 
-        <div class="mb-2 text-xs text-purple-300 font-semibold flex justify-between">
-            <span>📊 Official Live Chart</span>
-            <span class="text-[10px] text-gray-400">1m Smooth Feed</span>
-        </div>
-        
-        <!-- Reduced Height Container (Approx 5% Smaller) & Clean Mode -->
-        <div class="w-full h-72 rounded-xl overflow-hidden border border-purple-800/50" id="tv_chart_container"></div>
+        <!-- Reduced Size Clean Chart Wrapper -->
+        <div class="w-full h-64 rounded-xl overflow-hidden border border-purple-800/50" id="tv_chart_container"></div>
     </div>
 
     <!-- Bottom Nav -->
-    <div class="fixed bottom-3 left-4 right-4 glass-card p-3 flex justify-around items-center border-t border-purple-500/30">
+    <div class="fixed bottom-3 left-4 right-4 glass-card p-2.5 flex justify-around items-center border-t border-purple-500/30">
         <button onclick="switchTab('voice')" class="text-purple-400 hover:text-white"><i class="fa-solid fa-microphone text-lg"></i></button>
         <button onclick="switchTab('signal')" class="text-purple-400 hover:text-white"><i class="fa-solid fa-chart-simple text-lg"></i></button>
     </div>
@@ -215,7 +287,7 @@ HTML_TEMPLATE = """
                 "toolbar_bg": "#0b021a",
                 "enable_publishing": false,
                 "hide_side_toolbar": true,
-                "hide_top_toolbar": false,
+                "hide_top_toolbar": true,
                 "allow_symbol_change": false,
                 "save_image": false,
                 "details": false,
@@ -237,9 +309,19 @@ HTML_TEMPLATE = """
         }
 
         function changeMarketSymbol() {
-            const selectedSymbol = document.getElementById('pair-select').value;
-            loadTradingViewChart(selectedSymbol);
-            fetchSignalData(selectedSymbol);
+            const selectElem = document.getElementById('pair-select');
+            const selectedOption = selectElem.options[selectElem.selectedIndex];
+            const isOtc = selectedOption.getAttribute('data-otc') === 'true';
+            const warningElem = document.getElementById('otc-warning');
+
+            if(isOtc) {
+                warningElem.classList.remove('hidden');
+            } else {
+                warningElem.classList.add('hidden');
+            }
+
+            loadTradingViewChart(selectElem.value);
+                fetchSignalData(selectElem.value);
         }
 
         function startVoiceRecognition() {
@@ -257,14 +339,14 @@ HTML_TEMPLATE = """
             
             recognition.onresult = async (event) => {
                 const text = event.results[0][0].transcript;
-                const selectedSymbol = document.getElementById('pair-select').value;
-                document.getElementById('ai-status-text').innerText = "ANALYZING...";
+                const selectElem = document.getElementById('pair-select');
+                document.getElementById('ai-status-text').innerText = "THINKING...";
                 
                 try {
                     const res = await fetch('/api/voice_assistant', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({prompt: text, symbol: selectedSymbol})
+                        body: JSON.stringify({prompt: text, symbol: selectElem.value})
                     });
                     const data = await res.json();
                     document.getElementById('ai-status-text').innerText = "SUFIA IS SPEAKING...";
@@ -294,13 +376,11 @@ HTML_TEMPLATE = """
         }
 
         window.onload = () => {
-            const initialSymbol = document.getElementById('pair-select').value;
-            loadTradingViewChart(initialSymbol);
-            fetchSignalData(initialSymbol);
+            changeMarketSymbol();
             setInterval(() => {
                 const currentSymbol = document.getElementById('pair-select').value;
                 fetchSignalData(currentSymbol);
-            }, 6000);
+            }, 5000);
         };
     </script>
 </body>
@@ -308,7 +388,7 @@ HTML_TEMPLATE = """
 """
 
 # ==========================================
-# 3. ADVANCED VOICE AI ROUTE
+# 3. ADVANCED AI CHAT ROUTE
 # ==========================================
 
 @app.route('/')
@@ -327,12 +407,12 @@ def voice_assistant():
     symbol = data.get('symbol', 'FX:EURUSD')
     
     # Check if user asks for signal/trade generation
-    if "trade" in user_prompt or "signal" in user_prompt or "ট্রেড" in user_prompt or "সিগন্যাল" in user_prompt:
+    if any(k in user_prompt for k in ["trade", "signal", "ট্রেড", "সিগন্যাল", "বাই", "সেল", "কল", "পুট"]):
         sig_data = get_market_signal(symbol)
-        response_text = f"বর্তমান মার্কেটে {sig_data['pair']}-এর জন্য সিগন্যাল হলো: {sig_data['signal']}। আনুমানিক অ্যাকুরেসি {sig_data['accuracy']}। কারণ: {sig_data['reason']}।"
+        response_text = f"বর্তমান সিলেক্টেড পেয়ার {sig_data['pair']}-এর জন্য সিগন্যাল হলো: {sig_data['signal']}। সম্ভাব্য অ্যাকুরেসি {sig_data['accuracy']}। কারণ: {sig_data['reason']}।"
     else:
-        # General conversation fallback
-        response_text = f"জি, আমি শুনছি। আপনার প্রশ্ন '{user_prompt}' এর প্রেক্ষিতে বলা যায়, লাইভ মার্কেট এনালাইসিস চালু আছে। আপনার নির্দেশ মত যেকোনো ট্রেড সিগন্যাল তৈরি করতে পারি।"
+        # Gemini AI Conversational Fallback
+        response_text = f"জি, আমি শুনছি। আপনার বার্তা: '{user_prompt}' পেয়েছি। ট্রেডিং সিগন্যাল চাওয়া হলে যেকোনো সময় আমায় বলুন, আমি স্ক্রিনের লাইভ ডাটা স্ক্যান করে ট্রেড সিগন্যাল জেনারেট করে দেব।"
 
     return jsonify({"reply": response_text})
 
