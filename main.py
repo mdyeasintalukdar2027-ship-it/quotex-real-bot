@@ -5,7 +5,7 @@ from flask import Flask, jsonify, request, render_template_string
 app = Flask(__name__)
 
 # ==========================================
-# 1. HIGH-CONFLUENCE SIGNAL ENGINE
+# 1. INSTITUTIONAL REAL-TIME SIGNAL ENGINE
 # ==========================================
 
 def fetch_real_candles(symbol="FX:EURUSD"):
@@ -68,7 +68,7 @@ def get_market_signal(symbol="FX:EURUSD"):
         return {
             "status": "wait",
             "pair": symbol,
-            "direction": "WAITING...",
+            "direction": "WAIT",
             "signal": "WAIT",
             "accuracy": "--",
             "reason": "Waiting for High Confluence Institutional Setup...",
@@ -82,7 +82,6 @@ def get_market_signal(symbol="FX:EURUSD"):
     is_bullish = (prev_candle['close'] < prev_candle['open']) and (last_candle['close'] > prev_candle['high'])
     is_bearish = (prev_candle['close'] > prev_candle['open']) and (last_candle['close'] < prev_candle['low'])
 
-    # STRICT CONFLUENCE: Only trigger signal when condition is high-win potential
     if rsi_val < 35 or (rsi_val < 45 and is_bullish):
         return {
             "status": "success",
@@ -90,7 +89,7 @@ def get_market_signal(symbol="FX:EURUSD"):
             "direction": "UP",
             "signal": "CALL (BUY)",
             "accuracy": "86% - 92%",
-            "reason": f"SMC Demand Zone & Oversold Reversal Confirmed (RSI: {rsi_val})",
+            "reason": f"SMC Demand Zone Bounce & Oversold Reversal (RSI: {rsi_val})",
             "rsi": rsi_val
         }
     elif rsi_val > 65 or (rsi_val > 55 and is_bearish):
@@ -107,7 +106,7 @@ def get_market_signal(symbol="FX:EURUSD"):
         return {
             "status": "wait",
             "pair": symbol,
-            "direction": "WAITING...",
+            "direction": "WAIT",
             "signal": "WAIT",
             "accuracy": "--",
             "reason": "Waiting for High Confluence Setup. Market in Neutral Zone.",
@@ -115,7 +114,7 @@ def get_market_signal(symbol="FX:EURUSD"):
         }
 
 # ==========================================
-# 2. UI FRONTEND (GAPLESS & SCREEN FITTED)
+# 2. UI FRONTEND (PERFECT BORDER & NO GAP)
 # ==========================================
 
 HTML_TEMPLATE = """
@@ -142,19 +141,21 @@ HTML_TEMPLATE = """
             overflow: hidden;
         }
 
+        /* 1-Second Smooth Border Pulse Animation */
         @keyframes borderPulse {
-            0% { border-color: #a855f7; box-shadow: 0 0 14px rgba(168, 85, 247, 0.5); }
-            33% { border-color: #ec4899; box-shadow: 0 0 14px rgba(236, 72, 153, 0.5); }
-            66% { border-color: #3b82f6; box-shadow: 0 0 14px rgba(59, 130, 246, 0.5); }
-            100% { border-color: #a855f7; box-shadow: 0 0 14px rgba(168, 85, 247, 0.5); }
+            0% { border-color: #a855f7; box-shadow: 0 0 12px rgba(168, 85, 247, 0.6); }
+            33% { border-color: #ec4899; box-shadow: 0 0 12px rgba(236, 72, 153, 0.6); }
+            66% { border-color: #3b82f6; box-shadow: 0 0 12px rgba(59, 130, 246, 0.6); }
+            100% { border-color: #a855f7; box-shadow: 0 0 12px rgba(168, 85, 247, 0.6); }
         }
 
         .full-app-container {
             border: 2px solid #a855f7;
-            border-radius: 18px;
-            padding: 12px;
-            height: 100vh;
-            width: 100vw;
+            border-radius: 16px;
+            padding: 8px;
+            height: 98vh;
+            width: 98vw;
+            margin: 1vh auto;
             background: rgba(8, 2, 20, 0.98);
             animation: borderPulse 1s infinite linear;
             display: flex;
@@ -171,23 +172,21 @@ HTML_TEMPLATE = """
         }
         .ai-orb-glow { animation: orbGlow 2s infinite ease-in-out; }
 
+        /* Fitted TradingView Height */
         #chart-wrapper {
-            flex-grow: 1;
-            min-height: 240px;
-            display: flex;
-            flex-direction: column;
+            height: 200px;
+            width: 100%;
         }
         #tv_chart_container {
             width: 100% !important;
             height: 100% !important;
-            flex-grow: 1;
         }
         #tv_chart_container iframe {
-            border-radius: 12px !important;
+            border-radius: 10px !important;
         }
     </style>
 </head>
-<body class="p-1">
+<body class="p-0">
 
     <!-- PASSWORD LOCK OVERLAY -->
     <div id="lock-screen" class="fixed inset-0 bg-[#030008] z-50 flex flex-col items-center justify-center p-4">
@@ -212,40 +211,40 @@ HTML_TEMPLATE = """
     <div id="main-interface" class="hidden full-app-container">
         <div class="flex flex-col h-full justify-between">
             <!-- Header Profile -->
-            <div class="flex justify-between items-center mb-2">
+            <div class="flex justify-between items-center mb-1">
                 <div class="flex items-center gap-2">
-                    <div class="w-10 h-10 rounded-full bg-purple-950 border border-purple-400 p-0.5 flex items-center justify-center overflow-hidden">
+                    <div class="w-8 h-8 rounded-full bg-purple-950 border border-purple-400 p-0.5 flex items-center justify-center overflow-hidden">
                         <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" class="w-full h-full object-cover rounded-full" alt="Ultra Dark Robot Profile">
                     </div>
                     <div>
-                        <h1 class="font-bold text-xs text-purple-200 tracking-wide">YSTR VIP BOT</h1>
-                        <p class="text-[10px] text-green-400 font-bold flex items-center gap-1">
-                            <span class="w-2 h-2 rounded-full bg-green-500 inline-block blinking-dot"></span> BOT ACTIVE
+                        <h1 class="font-bold text-[11px] text-purple-200 tracking-wide">YSTR VIP BOT</h1>
+                        <p class="text-[9px] text-green-400 font-bold flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block blinking-dot"></span> BOT ACTIVE
                         </p>
                     </div>
                 </div>
-                <span class="bg-purple-900/50 border border-purple-500/40 text-purple-300 text-[10px] px-2.5 py-1 rounded-full font-semibold">AI PRO MODEL</span>
+                <span class="bg-purple-900/50 border border-purple-500/40 text-purple-300 text-[9px] px-2 py-0.5 rounded-full font-semibold">AI PRO MODEL</span>
             </div>
 
-            <!-- Voice Interface Box (Slightly Enlarged) -->
-            <div class="bg-purple-950/40 border border-purple-600/40 rounded-2xl p-3.5 text-center mb-2">
-                <div class="relative w-16 h-16 mx-auto rounded-full bg-gradient-to-tr from-amber-500 via-purple-600 to-yellow-500 p-1 flex items-center justify-center mb-1 shadow-2xl ai-orb-glow">
+            <!-- Voice Interface Box -->
+            <div class="bg-purple-950/40 border border-purple-600/40 rounded-xl p-2 text-center mb-1">
+                <div class="relative w-14 h-14 mx-auto rounded-full bg-gradient-to-tr from-amber-500 via-purple-600 to-yellow-500 p-0.5 flex items-center justify-center mb-1 shadow-2xl ai-orb-glow">
                     <div class="w-full h-full rounded-full bg-[#080214] flex items-center justify-center">
-                        <i class="fa-solid fa-brain text-xl text-amber-400"></i>
+                        <i class="fa-solid fa-brain text-lg text-amber-400"></i>
                     </div>
                 </div>
-                <p id="ai-status-text" class="text-[11px] text-amber-300 font-bold mb-2">TOT AI MASTER IS READY</p>
+                <p id="ai-status-text" class="text-[10px] text-amber-300 font-bold mb-1">TOT AI MASTER IS READY</p>
                 
-                <div class="flex justify-center items-center gap-3">
-                    <button onclick="startVoiceRecognition()" class="w-11 h-11 rounded-full bg-amber-400 text-black text-xs flex items-center justify-center shadow-lg hover:scale-105 transition font-bold">
+                <div class="flex justify-center items-center gap-2">
+                    <button onclick="startVoiceRecognition()" class="w-9 h-9 rounded-full bg-amber-400 text-black text-xs flex items-center justify-center shadow-lg hover:scale-105 transition font-bold">
                         <i class="fa-solid fa-microphone"></i>
                     </button>
                 </div>
             </div>
 
             <!-- Market Pair Selector -->
-            <div class="mb-2">
-                <select id="pair-select" onchange="changeMarketSymbol()" class="w-full bg-purple-950/90 text-xs p-2.5 rounded-xl border border-purple-500/60 text-purple-100 font-bold outline-none">
+            <div class="mb-1">
+                <select id="pair-select" onchange="changeMarketSymbol()" class="w-full bg-purple-950/90 text-xs p-2 rounded-xl border border-purple-500/60 text-purple-100 font-bold outline-none">
                     <optgroup label="--- REAL MARKETS ---">
                         <option value="FX:EURUSD" data-otc="false">EUR/USD (Real)</option>
                         <option value="FX:GBPUSD" data-otc="false">GBP/USD (Real)</option>
@@ -276,40 +275,45 @@ HTML_TEMPLATE = """
             </div>
 
             <!-- REAL MARKET SIGNAL DISPLAY BOX -->
-            <div id="real-signal-box" class="bg-black/60 p-2.5 rounded-xl mb-2 border border-purple-800/60">
-                <div class="flex justify-between text-xs mb-1">
+            <div id="real-signal-box" class="bg-black/60 p-2 rounded-xl mb-1 border border-purple-800/60">
+                <div class="flex justify-between text-xs mb-0.5">
                     <span>Signal: <b id="sig-val" class="text-yellow-400">WAIT</b></span>
                     <span>Accuracy: <b id="acc-val" class="text-green-400">--</b></span>
                 </div>
-                <p id="sig-reason" class="text-[10px] text-gray-300">Waiting for high confluence signal setup...</p>
+                <p id="sig-reason" class="text-[9px] text-gray-300">Waiting for high confluence signal setup...</p>
             </div>
 
-            <!-- REAL MARKET CLEAN CHART CONTAINER -->
-            <div id="chart-wrapper" class="w-full rounded-xl overflow-hidden border border-purple-800/50 mb-1 relative">
-                <div id="chart-status-tag" class="absolute top-2 left-2 z-10 bg-green-950/80 border border-green-500 text-green-300 text-[9px] px-2 py-0.5 rounded font-bold">
-                    ● LIVE CHART ACTIVATED
+            <!-- REAL MARKET SECTION -->
+            <div id="real-market-section" class="flex flex-col gap-1">
+                <div class="flex justify-between items-center px-1">
+                    <span class="bg-green-950/80 border border-green-500 text-green-300 text-[9px] px-2 py-0.5 rounded font-bold">
+                        ● LIVE CHART ACTIVATED
+                    </span>
                 </div>
-                <div id="tv_chart_container"></div>
+                <!-- CLEAN REAL CHART CONTAINER -->
+                <div id="chart-wrapper" class="rounded-xl overflow-hidden border border-purple-800/50">
+                    <div id="tv_chart_container"></div>
+                </div>
             </div>
 
-            <!-- OTC DYNAMIC SIGNAL DISPLAY (STRICTLY NO CHART, FULL GAP FILLING) -->
-            <div id="otc-signal-container" class="hidden flex-grow flex flex-col justify-between my-2 space-y-2">
-                <div class="bg-red-950/50 border border-red-500 text-red-200 p-3 rounded-xl text-center text-[11px] font-bold">
+            <!-- OTC DYNAMIC SIGNAL DISPLAY (STRICTLY NO CHART) -->
+            <div id="otc-signal-container" class="hidden flex-grow flex flex-col justify-between my-1 space-y-2">
+                <div class="bg-red-950/50 border border-red-500 text-red-200 p-2.5 rounded-xl text-center text-[10px] font-bold">
                     ⚠️ WARNING: THIS IS AN OTC MARKET! TECHNICAL ANALYSIS MAY BE UNRELIABLE. CHART HIDDEN FOR SAFETY.
                 </div>
 
-                <div id="otc-card" class="bg-purple-950/60 border-2 border-purple-500 p-8 rounded-2xl text-center shadow-2xl flex-grow flex flex-col justify-center items-center">
-                    <p class="text-xs text-purple-300 font-semibold mb-2">RECOMMENDED 1-MIN TRADE</p>
-                    <h1 id="otc-dir-text" class="text-4xl font-black text-yellow-400 tracking-wider mb-3">WAIT</h1>
-                    <p id="otc-reason-text" class="text-xs text-gray-300 mb-5">Analysis: Scanning Market High Confluence Setup...</p>
-                    <div id="otc-timer-box" class="inline-block bg-purple-900/80 px-6 py-2 rounded-full border border-purple-400 text-xs font-bold text-yellow-300">
+                <div id="otc-card" class="bg-purple-950/60 border-2 border-purple-500 p-6 rounded-2xl text-center shadow-2xl flex-grow flex flex-col justify-center items-center">
+                    <p class="text-xs text-purple-300 font-semibold mb-1">RECOMMENDED 1-MIN TRADE</p>
+                    <h1 id="otc-dir-text" class="text-3xl font-black text-yellow-400 tracking-wider mb-2">WAIT</h1>
+                    <p id="otc-reason-text" class="text-[11px] text-gray-300 mb-4">Analysis: Scanning High Confluence Setup...</p>
+                    <div id="otc-timer-box" class="inline-block bg-purple-900/80 px-5 py-1.5 rounded-full border border-purple-400 text-xs font-bold text-yellow-300">
                         Expires in: <span id="otc-timer">60</span>s
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="text-center text-[10px] text-gray-400 pt-1 border-t border-purple-900/40">
+        <div class="text-center text-[9px] text-gray-400 pt-0.5 border-t border-purple-900/40">
             Powered by Institutional SMC Engine v4.0
         </div>
     </div>
@@ -366,11 +370,11 @@ HTML_TEMPLATE = """
                 const dirElem = document.getElementById('otc-dir-text');
                 dirElem.innerText = data.direction;
                 if(data.direction === "UP") {
-                    dirElem.className = "text-4xl font-black text-green-400 tracking-wider mb-3";
+                    dirElem.className = "text-4xl font-black text-green-400 tracking-wider mb-2";
                 } else if(data.direction === "DOWN") {
-                    dirElem.className = "text-4xl font-black text-red-500 tracking-wider mb-3";
+                    dirElem.className = "text-4xl font-black text-red-500 tracking-wider mb-2";
                 } else {
-                    dirElem.className = "text-3xl font-bold text-yellow-400 tracking-wider mb-3";
+                    dirElem.className = "text-3xl font-bold text-yellow-400 tracking-wider mb-2";
                 }
                 document.getElementById('otc-reason-text').innerText = "Analysis: " + data.reason;
 
@@ -397,12 +401,15 @@ HTML_TEMPLATE = """
             const isOtc = selectedOption.getAttribute('data-otc') === 'true';
             
             const realBox = document.getElementById('real-signal-box');
-            const chartWrapper = document.getElementById('chart-wrapper');
+            const realSection = document.getElementById('real-market-section');
             const otcContainer = document.getElementById('otc-signal-container');
 
             if(isOtc) {
+                // STRICT HIDE REAL CHART AND SECTION ON OTC MARKET
                 realBox.classList.add('hidden');
-                chartWrapper.classList.add('hidden');
+                realSection.classList.add('hidden');
+                document.getElementById('tv_chart_container').innerHTML = ''; // Kill TradingView Frame
+                
                 otcContainer.classList.remove('hidden');
                 otcContainer.classList.add('flex');
                 fetchSignalData(selectElem.value);
@@ -411,8 +418,9 @@ HTML_TEMPLATE = """
                 clearInterval(otcCountdown);
                 otcContainer.classList.add('hidden');
                 otcContainer.classList.remove('flex');
+                
                 realBox.classList.remove('hidden');
-                chartWrapper.classList.remove('hidden');
+                realSection.classList.remove('hidden');
                 loadTradingViewChart(selectElem.value);
                 fetchSignalData(selectElem.value);
             }
