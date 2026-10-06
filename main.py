@@ -66,13 +66,13 @@ def get_market_signal(symbol="FX:EURUSD"):
     candles = fetch_real_candles(symbol)
     if not candles or len(candles) < 15:
         return {
-            "status": "success",
+            "status": "wait",
             "pair": symbol,
-            "direction": "UP",
-            "signal": "CALL (BUY)",
-            "accuracy": "85% - 90%",
-            "reason": "SMC Order Block Retest & FVG Imbalance Refilled",
-            "rsi": 38.5
+            "direction": "WAIT",
+            "signal": "ANALYZING MARKET...",
+            "accuracy": "--%",
+            "reason": "Scanning Live Price Action & Institutional SMC Blocks...",
+            "rsi": 50.0
         }
 
     rsi_val = calculate_rsi(candles)
@@ -141,18 +141,18 @@ HTML_TEMPLATE = """
             overflow: hidden;
         }
 
-        /* Border Glow Animation */
+        /* Smooth Border Glow Animation */
         @keyframes borderPulse {
-            0% { border-color: #a855f7; box-shadow: 0 0 12px rgba(168, 85, 247, 0.6); }
-            33% { border-color: #ec4899; box-shadow: 0 0 12px rgba(236, 72, 153, 0.6); }
-            66% { border-color: #3b82f6; box-shadow: 0 0 12px rgba(59, 130, 246, 0.6); }
-            100% { border-color: #a855f7; box-shadow: 0 0 12px rgba(168, 85, 247, 0.6); }
+            0% { border-color: #a855f7; box-shadow: 0 0 14px rgba(168, 85, 247, 0.6); }
+            33% { border-color: #ec4899; box-shadow: 0 0 14px rgba(236, 72, 153, 0.6); }
+            66% { border-color: #3b82f6; box-shadow: 0 0 14px rgba(59, 130, 246, 0.6); }
+            100% { border-color: #a855f7; box-shadow: 0 0 14px rgba(168, 85, 247, 0.6); }
         }
 
         .full-app-container {
             border: 2px solid #a855f7;
-            border-radius: 16px;
-            padding: 8px;
+            border-radius: 18px;
+            padding: 10px;
             height: 98vh;
             width: 98vw;
             margin: 1vh auto;
@@ -166,7 +166,7 @@ HTML_TEMPLATE = """
         @keyframes blinker { 50% { opacity: 0.3; } }
         .blinking-dot { animation: blinker 1s linear infinite; }
 
-        /* Liquid Wave Animation */
+        /* Golden Liquid Wave Animation */
         @keyframes liquidWave {
             0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
             50% { border-radius: 60% 40% 30% 70% / 50% 60% 40% 60%; }
@@ -176,12 +176,12 @@ HTML_TEMPLATE = """
         .ai-liquid-orb {
             background: linear-gradient(135deg, #f59e0b, #d97706, #7c3aed);
             animation: liquidWave 3s infinite ease-in-out;
-            box-shadow: 0 0 18px rgba(245, 158, 11, 0.5);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
         }
 
-        /* Adjusted Chart Container */
+        /* Adjusted Chart Box Height */
         #chart-wrapper {
-            height: 240px;
+            height: 230px;
             width: 100%;
         }
         #tv_chart_container {
@@ -216,42 +216,42 @@ HTML_TEMPLATE = """
 
     <!-- MAIN APP SCREEN -->
     <div id="main-interface" class="hidden full-app-container">
-        <div class="flex flex-col h-full justify-between gap-1">
+        <div class="flex flex-col h-full justify-between my-auto">
             <!-- Header Profile -->
-            <div class="flex justify-between items-center py-0.5">
+            <div class="flex justify-between items-center my-0.5">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-purple-950 border border-purple-400 p-0.5 flex items-center justify-center overflow-hidden">
                         <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" class="w-full h-full object-cover rounded-full" alt="Ultra Dark Robot Profile">
                     </div>
                     <div>
-                        <h1 class="font-bold text-[11px] text-purple-200 tracking-wide">YSTR VIP BOT</h1>
-                        <p class="text-[9px] text-green-400 font-bold flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block blinking-dot"></span> BOT ACTIVE
+                        <h1 class="font-bold text-xs text-purple-200 tracking-wide">YSTR VIP BOT</h1>
+                        <p class="text-[10px] text-green-400 font-bold flex items-center gap-1">
+                            <span class="w-2 h-2 rounded-full bg-green-500 inline-block blinking-dot"></span> BOT ACTIVE
                         </p>
                     </div>
                 </div>
-                <span class="bg-purple-900/50 border border-purple-500/40 text-purple-300 text-[9px] px-2 py-0.5 rounded-full font-semibold">AI PRO MODEL</span>
+                <span class="bg-purple-900/50 border border-purple-500/40 text-purple-300 text-[10px] px-2.5 py-1 rounded-full font-semibold">AI PRO MODEL</span>
             </div>
 
-            <!-- Balanced AI Voice Box -->
-            <div class="bg-purple-950/40 border border-purple-600/40 rounded-xl p-2.5 text-center">
-                <div class="relative w-14 h-14 mx-auto rounded-full p-0.5 flex items-center justify-center mb-1 shadow-xl border border-amber-400/60">
+            <!-- 5% Enlarged AI Voice Box (GAP-FREE) -->
+            <div class="bg-purple-950/40 border border-purple-600/40 rounded-2xl p-3 text-center my-0.5">
+                <div class="relative w-16 h-16 mx-auto rounded-full p-1 flex items-center justify-center mb-1 shadow-2xl border-2 border-amber-400/60">
                     <div class="w-full h-full rounded-full ai-liquid-orb flex items-center justify-center">
-                        <i class="fa-solid fa-brain text-lg text-amber-100"></i>
+                        <i class="fa-solid fa-brain text-xl text-amber-100"></i>
                     </div>
                 </div>
-                <p id="ai-status-text" class="text-[10px] text-amber-300 font-bold mb-1">TOT AI MASTER IS READY</p>
+                <p id="ai-status-text" class="text-[11px] text-amber-300 font-bold mb-1">TOT AI MASTER IS READY</p>
                 
                 <div class="flex justify-center items-center gap-2">
-                    <button onclick="startVoiceRecognition()" class="w-8 h-8 rounded-full bg-amber-400 text-black text-xs flex items-center justify-center shadow-md hover:scale-105 transition font-bold">
+                    <button onclick="startVoiceRecognition()" class="w-9 h-9 rounded-full bg-amber-400 text-black text-xs flex items-center justify-center shadow-lg hover:scale-105 transition font-bold">
                         <i class="fa-solid fa-microphone"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Market Pair Selector -->
-            <div>
-                <select id="pair-select" onchange="changeMarketSymbol()" class="w-full bg-purple-950/90 text-xs p-2 rounded-xl border border-purple-500/60 text-purple-100 font-bold outline-none">
+            <!-- 3% Enlarged Market Pair Selector -->
+            <div class="my-0.5">
+                <select id="pair-select" onchange="changeMarketSymbol()" class="w-full bg-purple-950/90 text-xs p-2.5 rounded-xl border border-purple-500/60 text-purple-100 font-bold outline-none">
                     <optgroup label="--- REAL MARKETS ---">
                         <option value="FX:EURUSD" data-otc="false">EUR/USD (Real)</option>
                         <option value="FX:GBPUSD" data-otc="false">GBP/USD (Real)</option>
@@ -290,17 +290,17 @@ HTML_TEMPLATE = """
                 </select>
             </div>
 
-            <!-- REAL MARKET SIGNAL DISPLAY BOX -->
-            <div id="real-signal-box" class="bg-black/60 p-2 rounded-xl border border-purple-800/60">
+            <!-- 3% Enlarged REAL MARKET SIGNAL DISPLAY BOX -->
+            <div id="real-signal-box" class="bg-black/60 p-2.5 rounded-xl my-0.5 border border-purple-800/60">
                 <div class="flex justify-between text-xs mb-0.5">
                     <span>Signal: <b id="sig-val" class="text-yellow-400">ANALYZING...</b></span>
                     <span>Accuracy: <b id="acc-val" class="text-green-400">--%</b></span>
                 </div>
-                <p id="sig-reason" class="text-[9px] text-gray-300">Scanning live market price action & SMC setups...</p>
+                <p id="sig-reason" class="text-[10px] text-gray-300">Scanning live market price action & SMC setups...</p>
             </div>
 
             <!-- REAL MARKET SECTION -->
-            <div id="real-market-section" class="flex flex-col gap-1">
+            <div id="real-market-section" class="flex flex-col gap-1 my-0.5">
                 <div class="flex justify-between items-center px-1">
                     <span class="bg-green-950/80 border border-green-500 text-green-300 text-[9px] px-2 py-0.5 rounded font-bold">
                         ● LIVE CHART ACTIVATED
@@ -312,7 +312,7 @@ HTML_TEMPLATE = """
                 </div>
             </div>
 
-            <!-- OTC DYNAMIC SIGNAL DISPLAY (15% RESIZED & PROPER SPACING) -->
+            <!-- OTC DYNAMIC SIGNAL DISPLAY (15% SMALLER & PROPER GAP) -->
             <div id="otc-signal-container" class="hidden flex-grow flex flex-col justify-start gap-2 my-0.5">
                 <div class="bg-red-950/50 border border-red-500 text-red-200 p-2 rounded-xl text-center text-[10px] font-bold">
                     ⚠️ WARNING: THIS IS AN OTC MARKET! TECHNICAL ANALYSIS MAY BE UNRELIABLE. CHART HIDDEN FOR SAFETY.
@@ -322,7 +322,7 @@ HTML_TEMPLATE = """
                     <p class="text-[11px] text-purple-300 font-semibold mb-0.5">RECOMMENDED 1-MIN TRADE</p>
                     <h1 id="otc-dir-text" class="text-3xl font-black text-green-400 tracking-wider mb-1">UP</h1>
                     <p id="otc-reason-text" class="text-[10px] text-gray-300 mb-2">Analysis: SMC Demand Zone Bounce & FVG Imbalance Refilled</p>
-                    <div id="otc-timer-box" class="inline-block bg-purple-900/80 px-4 py-1.5 rounded-full border border-purple-400 text-[11px] font-bold text-yellow-300">
+                    <div id="otc-timer-box" class="inline-block bg-purple-900/80 px-4 py-1 rounded-full border border-purple-400 text-[11px] font-bold text-yellow-300">
                         Expires in: <span id="otc-timer">60</span>s
                     </div>
                 </div>
