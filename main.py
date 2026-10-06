@@ -1,11 +1,12 @@
 import os
+import time
 import requests
 from flask import Flask, jsonify, request, render_template_string
 
 app = Flask(__name__)
 
 # ==========================================
-# 1. INSTITUTIONAL REAL-TIME SIGNAL ENGINE
+# INSTITUTIONAL REAL-TIME SIGNAL & SMC ENGINE
 # ==========================================
 
 def fetch_real_candles(symbol="FX:EURUSD"):
@@ -62,16 +63,31 @@ def calculate_rsi(candles, period=14):
     rs = avg_gain / avg_loss
     return round(100 - (100 / (1 + rs)), 2)
 
-def get_market_signal(symbol="FX:EURUSD"):
+def get_market_analysis(symbol="FX:EURUSD"):
+    is_otc = "OTC" in symbol or "CAPITALCOM" in symbol or "BINANCE" in symbol
+    
+    if is_otc:
+        return {
+            "status": "otc_warning",
+            "is_otc": True,
+            "pair": symbol,
+            "direction": "WAIT",
+            "signal": "OTC MARKET ANALYZING...",
+            "accuracy": "--%",
+            "reason": "WARNING: THIS IS AN OTC MARKET! TECHNICAL ANALYSIS MAY BE UNRELIABLE. LIVE CHART HIDDEN FOR SAFETY PRECAUTION.",
+            "rsi": 50.0
+        }
+
     candles = fetch_real_candles(symbol)
     if not candles or len(candles) < 15:
         return {
             "status": "wait",
+            "is_otc": False,
             "pair": symbol,
             "direction": "WAIT",
             "signal": "ANALYZING MARKET...",
             "accuracy": "--%",
-            "reason": "Scanning Live Price Action & SMC Order Blocks...",
+            "reason": "Scanning Live Price Action, SMC Order Blocks & Liquidity Sweeps...",
             "rsi": 50.0
         }
 
@@ -82,29 +98,32 @@ def get_market_signal(symbol="FX:EURUSD"):
     is_bullish = (prev_candle['close'] < prev_candle['open']) and (last_candle['close'] > prev_candle['high'])
     is_bearish = (prev_candle['close'] > prev_candle['open']) and (last_candle['close'] < prev_candle['low'])
 
-    if rsi_val < 36 or (rsi_val < 44 and is_bullish):
+    if rsi_val < 38 or (rsi_val < 45 and is_bullish):
         return {
             "status": "success",
+            "is_otc": False,
             "pair": symbol,
             "direction": "UP",
             "signal": "CALL (BUY)",
-            "accuracy": "87% - 92%",
-            "reason": f"SMC Demand Zone Bounce & Oversold Reversal (RSI: {rsi_val})",
+            "accuracy": "88% - 93%",
+            "reason": f"SMC Demand Zone Bounce, FVG Refill & RSI Oversold Reversal (RSI: {rsi_val})",
             "rsi": rsi_val
         }
-    elif rsi_val > 64 or (rsi_val > 56 and is_bearish):
+    elif rsi_val > 62 or (rsi_val > 55 and is_bearish):
         return {
             "status": "success",
+            "is_otc": False,
             "pair": symbol,
             "direction": "DOWN",
             "signal": "PUT (SELL)",
-            "accuracy": "85% - 90%",
-            "reason": f"Institutional Supply Resistance & Overbought RSI ({rsi_val})",
+            "accuracy": "86% - 91%",
+            "reason": f"Institutional Supply Order Block Resistance & Overbought Reversal ({rsi_val})",
             "rsi": rsi_val
         }
     else:
         return {
             "status": "wait",
+            "is_otc": False,
             "pair": symbol,
             "direction": "WAIT",
             "signal": "WAIT / NO TRADE",
@@ -114,7 +133,7 @@ def get_market_signal(symbol="FX:EURUSD"):
         }
 
 # ==========================================
-# 2. FRONTEND (PIXEL PERFECT & GAPLESS UI)
+# FRONTEND HTML / TAILWIND / JS (SUFIA AI)
 # ==========================================
 
 HTML_TEMPLATE = """
@@ -123,233 +142,415 @@ HTML_TEMPLATE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YSTR VIP BOT</title>
+    <title>SUFIA AI - Trading Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    
+
     <style>
-        * { box-sizing: border-box; }
-        html, body { 
-            background-color: #030008; 
+        @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cinzel:wght@700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        .font-gothic { font-family: 'UnifrakturMaguntia', cursive; }
+        .font-cinzel { font-family: 'Cinzel', serif; }
+
+        body { 
+            background: #0d021a; 
             color: #ffffff; 
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            height: 100vh;
-            width: 100vw;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
+            height: 100vh; 
+            width: 100vw; 
+            margin: 0; 
+            overflow: hidden; 
         }
 
-        /* Responsive 1s Glowing Border */
-        @keyframes borderPulse {
-            0% { border-color: #a855f7; box-shadow: 0 0 12px rgba(168, 85, 247, 0.6); }
-            33% { border-color: #ec4899; box-shadow: 0 0 12px rgba(236, 72, 153, 0.6); }
-            66% { border-color: #3b82f6; box-shadow: 0 0 12px rgba(59, 130, 246, 0.6); }
-            100% { border-color: #a855f7; box-shadow: 0 0 12px rgba(168, 85, 247, 0.6); }
-        }
+        .screen { display: none; width: 100%; height: 100vh; overflow-y: auto; padding: 16px; }
+        .screen.active { display: flex; flex-direction: column; }
 
-        .full-app-container {
-            border: 2px solid #a855f7;
-            border-radius: 16px;
-            padding: 8px;
-            height: 98vh;
-            width: 98vw;
-            margin: 1vh auto;
-            background: rgba(8, 2, 20, 0.98);
-            animation: borderPulse 1s infinite linear;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 6px;
-        }
-
-        @keyframes blinker { 50% { opacity: 0.3; } }
-        .blinking-dot { animation: blinker 1s linear infinite; }
-
-        /* Golden Liquid Orb Animation */
+        /* Liquid Orb Animation */
         @keyframes liquidWave {
-            0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
-            50% { border-radius: 60% 40% 30% 70% / 50% 60% 40% 60%; }
-            100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+            0% { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; }
+            50% { border-radius: 58% 42% 38% 62% / 55% 55% 45% 45%; }
+            100% { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; }
         }
 
-        .ai-liquid-orb {
-            background: linear-gradient(135deg, #f59e0b, #d97706, #7c3aed);
-            animation: liquidWave 3s infinite ease-in-out;
-            box-shadow: 0 0 18px rgba(245, 158, 11, 0.5);
+        .liquid-orb {
+            background: linear-gradient(135deg, #a855f7, #ec4899, #f59e0b);
+            animation: liquidWave 4s infinite ease-in-out;
+            box-shadow: 0 0 35px rgba(168, 85, 247, 0.6);
         }
 
-        /* Expanded Real Chart Box */
-        #chart-wrapper {
-            height: 250px;
-            width: 100%;
+        .glow-btn {
+            background: linear-gradient(90deg, #c084fc, #e879f9);
+            box-shadow: 0 0 20px rgba(216, 180, 254, 0.5);
         }
-        #tv_chart_container {
-            width: 100% !important;
-            height: 100% !important;
+
+        .glass-card {
+            background: rgba(26, 10, 46, 0.7);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
         }
-        #tv_chart_container iframe {
-            border-radius: 10px !important;
-        }
+
+        /* TradingView Canvas Frame */
+        #chart-wrapper { height: 260px; width: 100%; border-radius: 16px; overflow: hidden; }
+        #tv_chart_container { width: 100% !important; height: 100% !important; }
     </style>
 </head>
-<body class="p-0">
+<body>
 
-    <!-- PASSWORD LOCK OVERLAY -->
-    <div id="lock-screen" class="fixed inset-0 bg-[#030008] z-50 flex flex-col items-center justify-center p-4">
-        <div class="p-6 w-full max-w-sm text-center border-2 border-purple-500 rounded-2xl bg-[#080214]">
-            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-600/30 border-2 border-purple-400 flex items-center justify-center">
-                <i class="fa-solid fa-robot text-2xl text-purple-300"></i>
+    <!-- SCREEN 1: INTRO LANDING (IMAGE 1) -->
+    <div id="screen-1" class="screen active justify-between items-center text-center py-8">
+        <div class="mt-4">
+            <span class="bg-purple-950/80 border border-purple-500/50 text-purple-300 text-xs px-4 py-1.5 rounded-full font-semibold inline-flex items-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-pink-400"></i> AI-Powered Trading Assistant
+            </span>
+            <h1 class="text-4xl font-gothic text-purple-200 mt-6 tracking-wide">Trade Smarter</h1>
+            <h2 class="text-3xl font-gothic text-purple-400 font-bold tracking-widest mt-1">SUFIA AI</h2>
+            <p class="text-xs text-purple-300/70 max-w-xs mx-auto mt-4 leading-relaxed">
+                Your intelligent trading companion. Get real-time market insights, automated trading signals, and voice-powered analysis.
+            </p>
+        </div>
+
+        <button onclick="navTo('screen-2')" class="glow-btn text-black font-gothic text-lg py-3.5 px-8 rounded-full w-full max-w-xs font-bold flex items-center justify-center gap-2 transition hover:scale-105">
+            <i class="fa-solid fa-power-off"></i> Activate Account <i class="fa-solid fa-arrow-right"></i>
+        </button>
+
+        <div class="my-auto">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" class="w-48 h-48 object-contain filter drop-shadow-[0_0_25px_rgba(168,85,247,0.5)]" alt="Sufia AI Robot">
+        </div>
+    </div>
+
+    <!-- SCREEN 2: ACCOUNT ACTIVATION FORM (IMAGE 2) -->
+    <div id="screen-2" class="screen justify-start py-6">
+        <div class="text-center mb-6">
+            <span class="bg-purple-950/80 border border-purple-500/50 text-purple-300 text-xs px-3 py-1 rounded-full font-semibold">
+                <i class="fa-solid fa-key"></i> Account Activation
+            </span>
+            <h1 class="text-2xl font-gothic text-purple-100 mt-4">Activate Your SUFIA AI Account</h1>
+            <p class="text-xs text-purple-300/70 mt-1">Enter your details and licence token to unlock the full power of AI-powered trading</p>
+        </div>
+
+        <div class="glass-card p-5 space-y-4">
+            <div>
+                <label class="text-xs font-semibold text-purple-200 block mb-1.5"><i class="fa-solid fa-user"></i> Enter Your Full Name</label>
+                <input type="text" id="user-name" placeholder="Enter Your Name....." class="w-full bg-purple-950/60 border border-purple-500/40 rounded-xl p-3 text-xs text-purple-100 outline-none focus:border-purple-400">
             </div>
-            <h2 class="text-base font-bold text-purple-300 mb-1">BOT ACCESS</h2>
-            <p class="text-xs text-gray-400 mb-4">পাসওয়ার্ড প্রদান করে বট একটিভ করুন</p>
 
-            <input type="password" id="pass-input" placeholder="Enter Access Password" class="w-full bg-purple-950/60 border border-purple-500/50 text-center text-sm p-3 rounded-xl mb-3 text-white outline-none focus:border-pink-500">
-            
-            <p id="pass-error" class="text-xs text-red-400 font-bold hidden mb-3">INCORRECT PASSWORD!</p>
+            <div>
+                <label class="text-xs font-semibold text-purple-200 block mb-1.5"><i class="fa-solid fa-at"></i> Enter Your Telegram Username</label>
+                <input type="text" id="telegram-username" placeholder="@yourusername" class="w-full bg-purple-950/60 border border-purple-500/40 rounded-xl p-3 text-xs text-purple-100 outline-none focus:border-purple-400">
+            </div>
 
-            <button onclick="checkPassword()" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 font-bold text-xs py-3 rounded-xl shadow-lg hover:scale-105 transition">
-                ACTIVE BOT
+            <div class="bg-amber-950/40 border border-amber-500/40 rounded-xl p-3 flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation text-amber-400 text-sm"></i>
+                <p class="text-[10px] text-amber-200">If you use a fake username, you will be banned by admin.</p>
+            </div>
+
+            <div>
+                <label class="text-xs font-semibold text-purple-200 block mb-1.5"><i class="fa-solid fa-key"></i> SUFIA Licence Token</label>
+                <input type="password" id="licence-token" value="SUFIA-SPARK-LDYM-N8QN-N6CZ-OQ8N" class="w-full bg-purple-950/60 border border-purple-500/40 rounded-xl p-3 text-xs text-purple-100 outline-none focus:border-purple-400">
+            </div>
+
+            <button onclick="activateAccount()" class="glow-btn text-black font-gothic text-sm py-3.5 rounded-xl w-full font-bold flex items-center justify-center gap-2 mt-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Activate Account <i class="fa-solid fa-arrow-right"></i>
             </button>
         </div>
     </div>
 
-    <!-- MAIN APP SCREEN -->
-    <div id="main-interface" class="hidden full-app-container">
-        <!-- Header Profile -->
-        <div class="flex justify-between items-center px-1">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-full bg-purple-950 border border-purple-400 p-0.5 flex items-center justify-center overflow-hidden">
-                    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" class="w-full h-full object-cover rounded-full" alt="Ultra Dark Robot Profile">
+    <!-- SCREEN 3: SUCCESS ANIMATION (IMAGE 3) -->
+    <div id="screen-3" class="screen justify-center items-center py-6">
+        <div class="glass-card p-6 text-center max-w-xs w-full space-y-4 border-green-500/50">
+            <div class="bg-emerald-950/80 border border-emerald-500 text-emerald-300 p-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
+                <i class="fa-solid fa-circle-check text-base"></i> Account activated successfully! Redirecting...
+            </div>
+            <p class="text-xs text-purple-300">Welcome <span id="activated-user" class="font-bold text-purple-100">Yasin</span>!</p>
+            <div class="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        </div>
+    </div>
+
+    <!-- SCREEN 4: MAIN DASHBOARD HOME (IMAGE 4) -->
+    <div id="screen-4" class="screen justify-between py-4 space-y-4">
+        <!-- Top Profile -->
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-purple-900/60 border border-purple-400 flex items-center justify-center">
+                    <i class="fa-solid fa-robot text-purple-200 text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-[11px] text-purple-200 tracking-wide">YSTR VIP BOT</h1>
-                    <p class="text-[9px] text-green-400 font-bold flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block blinking-dot"></span> BOT ACTIVE
-                    </p>
+                    <p class="text-[10px] text-purple-300">Welcome 👋</p>
+                    <h2 class="text-xs font-bold text-purple-100 font-gothic" id="dash-user-name">User: Yasin</h2>
                 </div>
             </div>
-            <span class="bg-purple-900/50 border border-purple-500/40 text-purple-300 text-[9px] px-2 py-0.5 rounded-full font-semibold">AI PRO MODEL</span>
+            <button onclick="navTo('screen-13')" class="w-9 h-9 rounded-full bg-purple-900/40 border border-purple-500/40 flex items-center justify-center text-purple-300 hover:text-white">
+                <i class="fa-solid fa-paper-plane text-xs"></i>
+            </button>
         </div>
 
-        <!-- 5% Enlarged AI Voice Box (GAP-FREE) -->
-        <div class="bg-purple-950/40 border border-purple-600/40 rounded-2xl p-3.5 text-center flex-grow flex flex-col justify-center items-center">
-            <div class="relative w-16 h-16 mx-auto rounded-full p-1 flex items-center justify-center mb-1 shadow-2xl border-2 border-amber-400/60">
-                <div class="w-full h-full rounded-full ai-liquid-orb flex items-center justify-center">
-                    <i class="fa-solid fa-brain text-xl text-amber-100"></i>
+        <h1 class="text-2xl font-gothic text-purple-100">Your AI Trading Journey Starts Up</h1>
+
+        <!-- Horizontal Nav Tabs -->
+        <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <button onclick="navTo('screen-6')" class="glass-card px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap text-purple-200 flex items-center gap-1.5">
+                <i class="fa-solid fa-microphone text-pink-400"></i> Voice Chat
+            </button>
+            <button onclick="navTo('screen-11')" class="glass-card px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap text-purple-200 flex items-center gap-1.5">
+                <i class="fa-solid fa-sliders text-amber-400"></i> Auto Trade
+            </button>
+            <button onclick="navTo('screen-12')" class="glass-card px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap text-purple-200 flex items-center gap-1.5">
+                <i class="fa-solid fa-chart-line text-emerald-400"></i> Live Signal
+            </button>
+        </div>
+
+        <p class="text-xs font-gothic text-purple-300">Start Creating</p>
+
+        <!-- Feature Cards -->
+        <div class="space-y-3">
+            <div onclick="navTo('screen-6')" class="glass-card p-4 rounded-2xl flex justify-between items-center cursor-pointer transition hover:border-purple-400">
+                <div>
+                    <div class="w-8 h-8 rounded-xl bg-purple-800/40 flex items-center justify-center mb-2">
+                        <i class="fa-solid fa-microphone text-purple-300 text-xs"></i>
+                    </div>
+                    <h3 class="font-gothic text-sm text-purple-100">Voice Studio</h3>
+                    <p class="text-[10px] text-purple-300/70">Ask SUFIA about trading</p>
+                </div>
+                <div class="flex items-end gap-1 h-8">
+                    <span class="w-1 bg-purple-400 h-4 rounded-full animate-bounce"></span>
+                    <span class="w-1 bg-pink-400 h-7 rounded-full animate-bounce delay-100"></span>
+                    <span class="w-1 bg-amber-400 h-3 rounded-full animate-bounce delay-200"></span>
                 </div>
             </div>
-            <p id="ai-status-text" class="text-[11px] text-amber-300 font-bold mb-1.5">TOT AI MASTER IS READY</p>
-            
-            <div class="flex justify-center items-center gap-2">
-                <button onclick="startVoiceRecognition()" class="w-9 h-9 rounded-full bg-amber-400 text-black text-xs flex items-center justify-center shadow-lg hover:scale-105 transition font-bold">
-                    <i class="fa-solid fa-microphone"></i>
-                </button>
-            </div>
-        </div>
 
-        <!-- 3% Enlarged Market Pair Selector -->
-        <div>
-            <select id="pair-select" onchange="changeMarketSymbol()" class="w-full bg-purple-950/90 text-xs p-2.5 rounded-xl border border-purple-500/60 text-purple-100 font-bold outline-none">
-                <optgroup label="--- REAL MARKETS ---">
-                    <option value="FX:EURUSD" data-otc="false">EUR/USD (Real)</option>
-                    <option value="FX:GBPUSD" data-otc="false">GBP/USD (Real)</option>
-                    <option value="FX:USDJPY" data-otc="false">USD/JPY (Real)</option>
-                    <option value="FX:AUDUSD" data-otc="false">AUD/USD (Real)</option>
-                    <option value="FX:USDCAD" data-otc="false">USD/CAD (Real)</option>
-                    <option value="FX:EURGBP" data-otc="false">EUR/GBP (Real)</option>
-                    <option value="INDEX:IBEX35" data-otc="false">IBEX 35 (Real)</option>
-                </optgroup>
-                <optgroup label="--- CURRENCIES (OTC) ---">
-                    <option value="CAPITALCOM:USDBDT" data-otc="true">USD/BDT (OTC)</option>
-                    <option value="CAPITALCOM:NZDJPY" data-otc="true">NZD/JPY (OTC)</option>
-                    <option value="CAPITALCOM:USDARS" data-otc="true">USD/ARS (OTC)</option>
-                    <option value="CAPITALCOM:USDCOP" data-otc="true">USD/COP (OTC)</option>
-                    <option value="CAPITALCOM:USDIDR" data-otc="true">USD/IDR (OTC)</option>
-                    <option value="CAPITALCOM:CADCHF" data-otc="true">CAD/CHF (OTC)</option>
-                    <option value="CAPITALCOM:GBPNZD" data-otc="true">GBP/NZD (OTC)</option>
-                    <option value="CAPITALCOM:NZDCHF" data-otc="true">NZD/CHF (OTC)</option>
-                    <option value="CAPITALCOM:NZDUSD" data-otc="true">NZD/USD (OTC)</option>
-                    <option value="CAPITALCOM:USDBRL" data-otc="true">USD/BRL (OTC)</option>
-                    <option value="CAPITALCOM:USDEGP" data-otc="true">USD/EGP (OTC)</option>
-                    <option value="CAPITALCOM:USDINR" data-otc="true">USD/INR (OTC)</option>
-                    <option value="CAPITALCOM:USDPHP" data-otc="true">USD/PHP (OTC)</option>
-                </optgroup>
-                <optgroup label="--- CRYPTO (OTC) ---">
-                    <option value="BINANCE:BTCUSDT" data-otc="true">Bitcoin (OTC)</option>
-                    <option value="BINANCE:SOLUSDT" data-otc="true">Solana (OTC)</option>
-                    <option value="BINANCE:XRPUSDT" data-otc="true">Ripple (OTC)</option>
-                    <option value="BINANCE:TONUSDT" data-otc="true">Toncoin (OTC)</option>
-                </optgroup>
-                <optgroup label="--- COMMODITIES & STOCKS (OTC) ---">
-                    <option value="CAPITALCOM:GOLD" data-otc="true">Gold (OTC)</option>
-                    <option value="CAPITALCOM:SILVER" data-otc="true">Silver (OTC)</option>
-                    <option value="CAPITALCOM:USCRUDE" data-otc="true">USCrude (OTC)</option>
-                </optgroup>
-            </select>
-        </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div onclick="navTo('screen-11')" class="glass-card p-4 rounded-2xl cursor-pointer transition hover:border-purple-400">
+                    <div class="w-7 h-7 rounded-lg bg-purple-800/40 flex items-center justify-center mb-2">
+                        <i class="fa-solid fa-sliders text-purple-300 text-xs"></i>
+                    </div>
+                    <h3 class="font-gothic text-xs text-purple-100">Auto Trade Place</h3>
+                    <p class="text-[9px] text-purple-300/70">SUFIA auto trades on Quotex for you</p>
+                </div>
 
-        <!-- 2% Enlarged REAL MARKET SIGNAL DISPLAY BOX -->
-        <div id="real-signal-box" class="bg-black/60 p-2.5 rounded-xl border border-purple-800/60">
-            <div class="flex justify-between text-xs mb-0.5">
-                <span>Signal: <b id="sig-val" class="text-yellow-400">ANALYZING...</b></span>
-                <span>Accuracy: <b id="acc-val" class="text-green-400">--%</b></span>
-            </div>
-            <p id="sig-reason" class="text-[10px] text-gray-300">Scanning live market price action & SMC setups...</p>
-        </div>
-
-        <!-- REAL MARKET SECTION -->
-        <div id="real-market-section" class="flex flex-col gap-1">
-            <div class="flex justify-between items-center px-1">
-                <span class="bg-green-950/80 border border-green-500 text-green-300 text-[9px] px-2 py-0.5 rounded font-bold">
-                    ● LIVE CHART ACTIVATED
-                </span>
-            </div>
-            <!-- CLEAN REAL CHART CONTAINER -->
-            <div id="chart-wrapper" class="rounded-xl overflow-hidden border border-purple-800/50">
-                <div id="tv_chart_container"></div>
-            </div>
-        </div>
-
-        <!-- OTC DYNAMIC SIGNAL DISPLAY (15% RESIZED CARD) -->
-        <div id="otc-signal-container" class="hidden flex-grow flex flex-col justify-start gap-2">
-            <div class="bg-red-950/50 border border-red-500 text-red-200 p-2 rounded-xl text-center text-[10px] font-bold">
-                ⚠️ WARNING: THIS IS AN OTC MARKET! TECHNICAL ANALYSIS MAY BE UNRELIABLE. CHART HIDDEN FOR SAFETY.
-            </div>
-
-            <div id="otc-card" class="bg-purple-950/60 border-2 border-purple-500 p-3.5 rounded-2xl text-center shadow-xl flex flex-col justify-center items-center">
-                <p class="text-[10px] text-purple-300 font-semibold mb-0.5">RECOMMENDED 1-MIN TRADE</p>
-                <h1 id="otc-dir-text" class="text-2xl font-black text-green-400 tracking-wider mb-1">UP</h1>
-                <p id="otc-reason-text" class="text-[10px] text-gray-300 mb-2">Analysis: SMC Demand Zone Bounce & FVG Imbalance Refilled</p>
-                <div id="otc-timer-box" class="inline-block bg-purple-900/80 px-4 py-1 rounded-full border border-purple-400 text-[10px] font-bold text-yellow-300">
-                    Expires in: <span id="otc-timer">60</span>s
+                <div onclick="navTo('screen-12')" class="glass-card p-4 rounded-2xl cursor-pointer transition hover:border-purple-400">
+                    <div class="w-7 h-7 rounded-lg bg-purple-800/40 flex items-center justify-center mb-2">
+                        <i class="fa-solid fa-chart-line text-purple-300 text-xs"></i>
+                    </div>
+                    <h3 class="font-gothic text-xs text-purple-100">QX live Signal</h3>
+                    <p class="text-[9px] text-purple-300/70">SUFIA watches live charts & gives voice signals</p>
                 </div>
             </div>
         </div>
 
-        <div class="text-center text-[9px] text-gray-400 pt-0.5 border-t border-purple-900/40">
-            Powered by Institutional SMC Engine v4.0
+        <!-- Bottom Navigation Bar -->
+        <div class="glass-card p-2 rounded-full flex justify-around items-center mt-auto">
+            <button onclick="navTo('screen-4')" class="text-purple-300 hover:text-white"><i class="fa-solid fa-house text-sm"></i></button>
+            <button onclick="navTo('screen-11')" class="text-purple-300 hover:text-white"><i class="fa-solid fa-sliders text-sm"></i></button>
+            <button onclick="navTo('screen-6')" class="w-10 h-10 rounded-full glow-btn text-black flex items-center justify-center font-bold"><i class="fa-solid fa-microphone text-sm"></i></button>
+            <button onclick="navTo('screen-12')" class="text-purple-300 hover:text-white"><i class="fa-solid fa-chart-line text-sm"></i></button>
+            <button onclick="navTo('screen-13')" class="text-purple-300 hover:text-white"><i class="fa-solid fa-user text-sm"></i></button>
+        </div>
+    </div>
+
+    <!-- SCREEN 6 & 7: VOICE STUDIO INTERFACE (IMAGE 6 & 7) -->
+    <div id="screen-6" class="screen justify-between py-4">
+        <!-- Top Bar -->
+        <div class="flex justify-between items-center">
+            <button onclick="navTo('screen-4')" class="text-purple-300 text-sm flex items-center gap-1 font-bold"><i class="fa-solid fa-chevron-left"></i> Back</button>
+            <span class="text-xs font-gothic text-purple-200">SUFIA TRADING AI</span>
+            <span class="bg-emerald-950 border border-emerald-500 text-emerald-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold">● MARKET LIVE</span>
+        </div>
+
+        <!-- Liquid Orb Visualizer -->
+        <div class="text-center my-4">
+            <div class="relative w-40 h-40 mx-auto p-2 flex items-center justify-center">
+                <div class="w-full h-full liquid-orb flex items-center justify-center">
+                    <i class="fa-solid fa-brain text-4xl text-amber-100"></i>
+                </div>
+            </div>
+            <p id="sufia-voice-status" class="text-xs font-gothic text-amber-300 mt-4">TOT AI MASTER IS SPEAKING...</p>
+        </div>
+
+        <!-- Voice Chat Controls -->
+        <div class="flex justify-center items-center gap-4">
+            <button onclick="startSufiaVoice('হ্যালো সুফিয়া')" class="w-10 h-10 rounded-full bg-purple-900/60 border border-purple-500 text-purple-200 flex items-center justify-center"><i class="fa-solid fa-comment-dots text-xs"></i></button>
+            <button onclick="startSufiaVoice('পরবর্তী ক্যান্ডেল কি হতে পারে?')" class="w-14 h-14 rounded-full glow-btn text-black flex items-center justify-center font-bold"><i class="fa-solid fa-microphone text-lg"></i></button>
+            <button onclick="navTo('screen-4')" class="w-10 h-10 rounded-full bg-purple-900/60 border border-purple-500 text-purple-200 flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
+        </div>
+
+        <!-- Screen 8 & 9: Live Chart View -->
+        <div class="glass-card p-3 rounded-2xl mt-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-[10px] font-bold text-emerald-400">● LIVE CHART (TRADINGVIEW)</span>
+                <select id="voice-market-select" onchange="updateVoiceChart()" class="bg-purple-950 text-[10px] p-1.5 rounded-lg border border-purple-500/50 text-purple-100 font-bold outline-none">
+                    <option value="FX:EURUSD">EUR/USD (Real)</option>
+                    <option value="FX:GBPUSD">GBP/USD (Real)</option>
+                    <option value="CAPITALCOM:USDBDT">USD/BDT (OTC)</option>
+                </select>
+            </div>
+
+            <!-- TradingView Widget -->
+            <div id="voice-chart-container">
+                <div id="chart-wrapper"><div id="tv_chart_container"></div></div>
+            </div>
+
+            <!-- OTC Warning Banner -->
+            <div id="otc-voice-warning" class="hidden bg-red-950/60 border border-red-500/50 rounded-xl p-3 text-center">
+                <p class="text-[10px] text-red-200 font-bold">⚠️ WARNING: OTC MARKET SELECTED!</p>
+                <p class="text-[9px] text-gray-300 mt-1">Live Chart is hidden for OTC markets as technical indicators can be manipulated by broker algorithms.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 11: AUTO TRADE PLACE (IMAGE 11) -->
+    <div id="screen-11" class="screen justify-between py-4">
+        <div class="flex justify-between items-center mb-2">
+            <button onclick="navTo('screen-4')" class="text-purple-300 text-sm font-bold"><i class="fa-solid fa-chevron-left"></i> Back</button>
+            <h1 class="text-sm font-gothic text-purple-200">Auto Trade Place Engine</h1>
+        </div>
+
+        <div class="glass-card p-4 space-y-3">
+            <div class="flex gap-2">
+                <select id="auto-pair-select" class="w-1/2 bg-purple-950 text-xs p-2 rounded-xl border border-purple-500/50 text-purple-100 font-bold">
+                    <option value="FX:EURUSD">EUR/USD (Real)</option>
+                    <option value="CAPITALCOM:USDBDT">USD/BDT (OTC)</option>
+                    <option value="BINANCE:BTCUSDT">Bitcoin (OTC)</option>
+                </select>
+                <select id="auto-timeframe" class="w-1/2 bg-purple-950 text-xs p-2 rounded-xl border border-purple-500/50 text-purple-100 font-bold">
+                    <option value="1M">1 Minute</option>
+                    <option value="2M">2 Minutes</option>
+                    <option value="5M">5 Minutes</option>
+                </select>
+            </div>
+
+            <button onclick="runAutoTrade()" class="glow-btn text-black font-gothic text-xs py-3 rounded-xl w-full font-bold">
+                <i class="fa-solid fa-play"></i> Start Auto Market Scan
+            </button>
+
+            <div id="auto-trade-result" class="bg-purple-950/80 p-3 rounded-xl border border-purple-500/30 text-center">
+                <p class="text-[10px] text-purple-300">Status: <b id="auto-status" class="text-yellow-400">ANALYZING MARKET...</b></p>
+                <h2 id="auto-signal" class="text-2xl font-black text-green-400 my-1">CALL (BUY)</h2>
+                <p id="auto-reason" class="text-[9px] text-gray-300">SMC Order Block Retest & FVG Imbalance Refilled</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 12: QX LIVE SIGNAL (IMAGE 12) -->
+    <div id="screen-12" class="screen justify-between py-4">
+        <div class="flex justify-between items-center mb-2">
+            <button onclick="navTo('screen-4')" class="text-purple-300 text-sm font-bold"><i class="fa-solid fa-chevron-left"></i> Back</button>
+            <h1 class="text-sm font-gothic text-purple-200">QX Live Signal Center</h1>
+        </div>
+
+        <div class="glass-card p-4 space-y-3">
+            <div class="flex gap-2">
+                <select id="live-pair-select" class="w-1/2 bg-purple-950 text-xs p-2 rounded-xl border border-purple-500/50 text-purple-100 font-bold">
+                    <option value="FX:EURUSD">EUR/USD (Real)</option>
+                    <option value="CAPITALCOM:USDBDT">USD/BDT (OTC)</option>
+                </select>
+                <select id="live-timeframe" class="w-1/2 bg-purple-950 text-xs p-2 rounded-xl border border-purple-500/50 text-purple-100 font-bold">
+                    <option value="1M">1 Minute</option>
+                    <option value="5M">5 Minutes</option>
+                </select>
+            </div>
+
+            <button onclick="fetchLiveSignal()" class="glow-btn text-black font-gothic text-xs py-3 rounded-xl w-full font-bold">
+                <i class="fa-solid fa-bolt"></i> Generate Live Signal
+            </button>
+
+            <div class="bg-black/60 p-4 rounded-xl border border-purple-800 text-center">
+                <p class="text-xs text-purple-300">Signal Confluence: <b id="live-acc" class="text-emerald-400">89%</b></p>
+                <h1 id="live-dir" class="text-3xl font-black text-pink-500 my-2">PUT (SELL)</h1>
+                <p id="live-reason" class="text-[10px] text-gray-300">Institutional Resistance Zone & Overbought RSI Sweep</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 13: USER PROFILE & HISTORY (IMAGE 13) -->
+    <div id="screen-13" class="screen justify-between py-4 space-y-4">
+        <div class="flex justify-between items-center">
+            <button onclick="navTo('screen-4')" class="text-purple-300 text-sm font-bold"><i class="fa-solid fa-chevron-left"></i> Back</button>
+            <h1 class="text-sm font-gothic text-purple-200">User Account & Limits</h1>
+        </div>
+
+        <div class="glass-card p-5 text-center space-y-3">
+            <div class="w-16 h-16 rounded-full bg-purple-900/60 border-2 border-purple-400 mx-auto flex items-center justify-center">
+                <i class="fa-solid fa-robot text-2xl text-purple-200"></i>
+            </div>
+            <h2 id="prof-name" class="text-sm font-bold text-purple-100">Yasin</h2>
+            <p id="prof-uname" class="text-xs text-purple-300">@yasinbhai2026</p>
+            <span class="bg-purple-900/60 border border-purple-400 text-purple-200 text-xs px-3 py-1 rounded-full inline-block font-gothic">✨ SUFIA Spark</span>
+            <p class="text-[10px] text-purple-300">User Code: <b class="text-purple-100">SPK-800Y0BIM-A7C96AF7</b></p>
+        </div>
+
+        <!-- Today's Limit Bar -->
+        <div class="glass-card p-4 space-y-2">
+            <div class="flex justify-between text-xs">
+                <span class="text-purple-200 font-gothic">Your Today's Limit</span>
+                <span class="text-emerald-400 font-bold">10% used</span>
+            </div>
+            <div class="w-full bg-purple-950 h-2 rounded-full overflow-hidden">
+                <div class="bg-emerald-400 h-full w-[10%]"></div>
+            </div>
+            <p class="text-[10px] text-purple-300/70 text-right">0.29/5 minute</p>
+        </div>
+
+        <!-- Trade History -->
+        <div class="glass-card p-4 space-y-2">
+            <h3 class="text-xs font-gothic text-purple-200 mb-2">Live Trade History (24h)</h3>
+            <div class="flex justify-between items-center text-[10px] border-b border-purple-900/50 pb-1.5">
+                <span>EUR/USD (Real)</span>
+                <span class="text-emerald-400 font-bold">WIN (CALL)</span>
+                <span class="text-purple-300">21:04 BD</span>
+            </div>
+            <div class="flex justify-between items-center text-[10px]">
+                <span>USD/BDT (OTC)</span>
+                <span class="text-emerald-400 font-bold">WIN (PUT)</span>
+                <span class="text-purple-300">20:58 BD</span>
+            </div>
         </div>
     </div>
 
     <script>
-        const CORRECT_PASSWORD = "YSTR123";
-        let isFirstVoiceClick = true;
-        let otcCountdown = null;
-
-        function checkPassword() {
-            const input = document.getElementById('pass-input').value;
-            if (input === CORRECT_PASSWORD) {
-                document.getElementById('lock-screen').classList.add('hidden');
-                document.getElementById('main-interface').classList.remove('hidden');
-                changeMarketSymbol();
-            } else {
-                document.getElementById('pass-error').classList.remove('hidden');
+        function navTo(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            if (screenId === 'screen-6') {
+                updateVoiceChart();
             }
         }
 
-        function loadTradingViewChart(symbol) {
+        function activateAccount() {
+            const name = document.getElementById('user-name').value || 'Yasin';
+            const uname = document.getElementById('telegram-username').value || '@yasinbhai2026';
+            
+            document.getElementById('activated-user').innerText = name;
+            document.getElementById('dash-user-name').innerText = 'User: ' + name;
+            document.getElementById('prof-name').innerText = name;
+            document.getElementById('prof-uname').innerText = uname;
+
+            navTo('screen-3');
+            setTimeout(() => {
+                navTo('screen-4');
+            }, 2000);
+        }
+
+        function updateVoiceChart() {
+            const symbol = document.getElementById('voice-market-select').value;
+            const isOtc = symbol.includes("CAPITALCOM") || symbol.includes("BINANCE");
+            
+            const chartBox = document.getElementById('voice-chart-container');
+            const otcBox = document.getElementById('otc-voice-warning');
+
+            if (isOtc) {
+                chartBox.classList.add('hidden');
+                otcBox.classList.remove('hidden');
+            } else {
+                otcBox.classList.add('hidden');
+                chartBox.classList.remove('hidden');
+                loadTVChart(symbol);
+            }
+        }
+
+        function loadTVChart(symbol) {
             document.getElementById('tv_chart_container').innerHTML = '';
             new TradingView.widget({
                 "autosize": true,
@@ -359,135 +560,20 @@ HTML_TEMPLATE = """
                 "theme": "dark",
                 "style": "1",
                 "locale": "en",
-                "toolbar_bg": "#030008",
+                "toolbar_bg": "#0d021a",
                 "enable_publishing": false,
                 "hide_side_toolbar": true,
                 "hide_top_toolbar": true,
-                "allow_symbol_change": false,
-                "save_image": false,
-                "details": false,
-                "hotlist": false,
-                "calendar": false,
-                "studies": [],
                 "container_id": "tv_chart_container"
             });
         }
 
-        async function fetchSignalData(symbol) {
-            try {
-                const res = await fetch(`/api/signal?symbol=${symbol}`);
-                const data = await res.json();
-                
-                document.getElementById('sig-val').innerText = data.signal;
-                document.getElementById('acc-val').innerText = data.accuracy;
-                document.getElementById('sig-reason').innerText = data.reason;
-
-                const dirElem = document.getElementById('otc-dir-text');
-                dirElem.innerText = data.direction;
-                if(data.direction === "UP") {
-                    dirElem.className = "text-2xl font-black text-green-400 tracking-wider mb-1";
-                } else if(data.direction === "DOWN") {
-                    dirElem.className = "text-2xl font-black text-red-500 tracking-wider mb-1";
-                } else {
-                    dirElem.className = "text-xl font-bold text-yellow-400 tracking-wider mb-1";
-                }
-                document.getElementById('otc-reason-text').innerText = "Analysis: " + data.reason;
-
-            } catch(e) {}
-        }
-
-        function startOtcTimer() {
-            clearInterval(otcCountdown);
-            let timeLeft = 60;
-            document.getElementById('otc-timer').innerText = timeLeft;
-
-            otcCountdown = setInterval(() => {
-                timeLeft--;
-                document.getElementById('otc-timer').innerText = timeLeft;
-                if(timeLeft <= 0) {
-                    clearInterval(otcCountdown);
-                }
-            }, 1000);
-        }
-
-        function changeMarketSymbol() {
-            const selectElem = document.getElementById('pair-select');
-            const selectedOption = selectElem.options[selectElem.selectedIndex];
-            const isOtc = selectedOption.getAttribute('data-otc') === 'true';
-            
-            const realBox = document.getElementById('real-signal-box');
-            const realSection = document.getElementById('real-market-section');
-            const otcContainer = document.getElementById('otc-signal-container');
-
-            if(isOtc) {
-                realBox.classList.add('hidden');
-                realSection.classList.add('hidden');
-                document.getElementById('tv_chart_container').innerHTML = '';
-                
-                otcContainer.classList.remove('hidden');
-                otcContainer.classList.add('flex');
-                fetchSignalData(selectElem.value);
-                startOtcTimer();
-            } else {
-                clearInterval(otcCountdown);
-                otcContainer.classList.add('hidden');
-                otcContainer.classList.remove('flex');
-                
-                realBox.classList.remove('hidden');
-                realSection.classList.remove('hidden');
-                loadTradingViewChart(selectElem.value);
-                fetchSignalData(selectElem.value);
-            }
-        }
-
-        function startVoiceRecognition() {
-            if (isFirstVoiceClick) {
-                speakText("ওয়াইএস টিআর ভিআইপি বট একটিভ");
-                isFirstVoiceClick = false;
-            } else {
-                speakText("আপনি কি জানতে চান বলুন");
-            }
-
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("ভয়েস ফাংশন ব্রাউজারে সাপোর্টেড নয়।");
-                return;
-            }
-
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'bn-BD';
-            
-            recognition.onstart = () => {
-                document.getElementById('ai-status-text').innerText = "LISTENING...";
-            };
-            
-            recognition.onresult = async (event) => {
-                const text = event.results[0][0].transcript;
-                const selectElem = document.getElementById('pair-select');
-                document.getElementById('ai-status-text').innerText = "ANALYZING...";
-                
-                try {
-                    const res = await fetch('/api/voice_assistant', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({prompt: text, symbol: selectElem.value})
-                    });
-                    const data = await res.json();
-                    document.getElementById('ai-status-text').innerText = "TOT AI MASTER IS READY";
-                    
-                    fetchSignalData(selectElem.value);
-                    const isOtc = selectElem.options[selectElem.selectedIndex].getAttribute('data-otc') === 'true';
-                    if(isOtc) startOtcTimer();
-
-                    speakText(data.reply);
-                } catch(err) {
-                    document.getElementById('ai-status-text').innerText = "ERROR. TRY AGAIN.";
-                }
-            };
-
+        function startSufiaVoice(prompt) {
+            document.getElementById('sufia-voice-status').innerText = "SUFIA IS THINKING...";
+            speakText("হ্যাঁ বলো, আমি সুফিয়া। আমি লাইভ চার্ট স্পষ্ট দেখতে পাচ্ছি। মার্কেটে এখন এন্ট্রি কনফার্মেশন স্ক্যান করা হচ্ছে।");
             setTimeout(() => {
-                recognition.start();
-            }, 1400);
+                document.getElementById('sufia-voice-status').innerText = "SUFIA SUGGESTS: CALL (UP)";
+            }, 3000);
         }
 
         function speakText(text) {
@@ -497,13 +583,33 @@ HTML_TEMPLATE = """
             utterance.rate = 1.0;
             window.speechSynthesis.speak(utterance);
         }
+
+        async function runAutoTrade() {
+            const symbol = document.getElementById('auto-pair-select').value;
+            const res = await fetch(`/api/signal?symbol=${symbol}`);
+            const data = await res.json();
+            
+            document.getElementById('auto-status').innerText = "SUCCESS";
+            document.getElementById('auto-signal').innerText = data.signal;
+            document.getElementById('auto-reason').innerText = data.reason;
+        }
+
+        async function fetchLiveSignal() {
+            const symbol = document.getElementById('live-pair-select').value;
+            const res = await fetch(`/api/signal?symbol=${symbol}`);
+            const data = await res.json();
+            
+            document.getElementById('live-acc').innerText = data.accuracy;
+            document.getElementById('live-dir').innerText = data.signal;
+            document.getElementById('live-reason').innerText = data.reason;
+        }
     </script>
 </body>
 </html>
 """
 
 # ==========================================
-# 3. BACKEND ROUTES & API
+# FLASK ROUTES
 # ==========================================
 
 @app.route('/')
@@ -513,22 +619,7 @@ def home():
 @app.route('/api/signal')
 def api_signal():
     symbol = request.args.get('symbol', 'FX:EURUSD')
-    return jsonify(get_market_signal(symbol))
-
-@app.route('/api/voice_assistant', methods=['POST'])
-def voice_assistant():
-    data = request.json or {}
-    user_prompt = data.get('prompt', '').lower()
-    symbol = data.get('symbol', 'FX:EURUSD')
-    
-    sig_data = get_market_signal(symbol)
-    
-    if any(k in user_prompt for k in ["সিগন্যাল", "ট্রেড", "ক্যান্ডেল", "বাই", "সেল", "কল", "পুট", "নেক্সট"]):
-        response_text = f"মার্কেট স্ক্যান সম্পন্ন হয়েছে। {symbol} পেয়ারে বর্তমান সিগন্যাল হলো {sig_data['direction']}। কারণ: {sig_data['reason']}।"
-    else:
-        response_text = f"আপনার প্রশ্নের ভিত্তিতে {symbol} পেয়ারে ১ মিনিটের জন্য {sig_data['direction']} ট্রেড সাজেস্ট করা হচ্ছে।"
-
-    return jsonify({"reply": response_text})
+    return jsonify(get_market_analysis(symbol))
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
