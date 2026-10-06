@@ -82,7 +82,7 @@ def get_market_signal(symbol="FX:EURUSD"):
     is_bullish = (prev_candle['close'] < prev_candle['open']) and (last_candle['close'] > prev_candle['high'])
     is_bearish = (prev_candle['close'] > prev_candle['open']) and (last_candle['close'] < prev_candle['low'])
 
-    if rsi_val < 42 or is_bullish:
+    if rsi_val < 40 or (rsi_val < 46 and is_bullish):
         return {
             "status": "success",
             "pair": symbol,
@@ -92,7 +92,7 @@ def get_market_signal(symbol="FX:EURUSD"):
             "reason": f"SMC Demand Zone Bounce & RSI Oversold Reversal ({rsi_val})",
             "rsi": rsi_val
         }
-    elif rsi_val > 58 or is_bearish:
+    elif rsi_val > 60 or (rsi_val > 54 and is_bearish):
         return {
             "status": "success",
             "pair": symbol,
@@ -109,12 +109,12 @@ def get_market_signal(symbol="FX:EURUSD"):
             "direction": "WAIT",
             "signal": "WAIT / NO TRADE",
             "accuracy": "--%",
-            "reason": f"Market Consolidation / Volatility Trap (RSI: {rsi_val})",
+            "reason": f"Market Consolidation / Low Confluence Zone (RSI: {rsi_val})",
             "rsi": rsi_val
         }
 
 # ==========================================
-# 2. FRONTEND WITH PERFECT ENLARGED UI
+# 2. FRONTEND WITH PERFECT GAPLESS UI
 # ==========================================
 
 HTML_TEMPLATE = """
@@ -141,7 +141,7 @@ HTML_TEMPLATE = """
             overflow: hidden;
         }
 
-        /* Smooth 1-Second Border Pulse Animation */
+        /* Border Glow Animation */
         @keyframes borderPulse {
             0% { border-color: #a855f7; box-shadow: 0 0 14px rgba(168, 85, 247, 0.6); }
             33% { border-color: #ec4899; box-shadow: 0 0 14px rgba(236, 72, 153, 0.6); }
@@ -166,7 +166,7 @@ HTML_TEMPLATE = """
         @keyframes blinker { 50% { opacity: 0.3; } }
         .blinking-dot { animation: blinker 1s linear infinite; }
 
-        /* Liquid Wave Animation for AI Master */
+        /* Golden Liquid Wave Animation */
         @keyframes liquidWave {
             0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
             50% { border-radius: 60% 40% 30% 70% / 50% 60% 40% 60%; }
@@ -179,7 +179,7 @@ HTML_TEMPLATE = """
             box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
         }
 
-        /* 1% Enlarged TradingView Height */
+        /* Fitted TradingView Frame */
         #chart-wrapper {
             height: 220px;
             width: 100%;
@@ -233,7 +233,7 @@ HTML_TEMPLATE = """
                 <span class="bg-purple-900/50 border border-purple-500/40 text-purple-300 text-[10px] px-2.5 py-1 rounded-full font-semibold">AI PRO MODEL</span>
             </div>
 
-            <!-- 5% Enlarged AI Voice Box (3rd Image Liquid Orb Style) -->
+            <!-- 5% Enlarged AI Voice Box -->
             <div class="bg-purple-950/40 border border-purple-600/40 rounded-2xl p-4 text-center mb-1">
                 <div class="relative w-20 h-20 mx-auto rounded-full p-1 flex items-center justify-center mb-1 shadow-2xl border-2 border-amber-400/60">
                     <div class="w-full h-full rounded-full ai-liquid-orb flex items-center justify-center">
@@ -312,7 +312,7 @@ HTML_TEMPLATE = """
                 </div>
             </div>
 
-            <!-- OTC DYNAMIC SIGNAL DISPLAY (Adjusted Size, GAPLESS) -->
+            <!-- OTC DYNAMIC SIGNAL DISPLAY (Strictly Gapless Layout) -->
             <div id="otc-signal-container" class="hidden flex-grow flex flex-col justify-between my-1 space-y-2">
                 <div class="bg-red-950/50 border border-red-500 text-red-200 p-2.5 rounded-xl text-center text-[10px] font-bold">
                     ⚠️ WARNING: THIS IS AN OTC MARKET! TECHNICAL ANALYSIS MAY BE UNRELIABLE. CHART HIDDEN FOR SAFETY.
