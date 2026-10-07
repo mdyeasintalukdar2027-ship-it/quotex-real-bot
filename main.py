@@ -98,7 +98,6 @@ def analyze_real_market(symbol="EURUSD=X"):
     last = candles[-1]
     is_bullish = (last['close'] >= last['open'])
     
-    # Pure Mathematical analysis using real exchange indicators
     if rsi_val < 50 or ema_fast > ema_slow or is_bullish:
         signal = "CALL (BUY)"
         calculated_acc = min(98, max(86, int(88 + (50 - rsi_val) * 0.4)))
@@ -313,37 +312,49 @@ HTML_TEMPLATE = """
             </div>
         </div>
 
-        <!-- SCREEN 2: VOICE STUDIO -->
-        <div id="screen-voice" class="screen">
-            <div class="flex justify-between items-center pt-1">
-                <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
+        <!-- SCREEN 2: VOICE STUDIO (UPDATED UI & PAIR SELECTOR) -->
+        <div id="screen-voice" class="screen pt-1">
+            <div class="flex justify-between items-center">
+                <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold flex items-center gap-1">‹ Back</button>
                 <span class="text-xs font-bold text-purple-200">SUFIA VOICE STUDIO</span>
                 <span class="bg-emerald-950 border border-emerald-500 text-emerald-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold">● LIVE</span>
             </div>
 
-            <div class="text-center my-1">
-                <div class="w-14 h-14 mx-auto rounded-full purple-glow-btn flex items-center justify-center my-1">
-                    <svg class="icon-svg text-black w-6 h-6" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
+            <!-- Market Pair Selector for Voice Studio -->
+            <div class="my-1.5">
+                <label class="text-[10px] text-gray-300 font-bold block mb-1">Select Quotex Real Market Pair</label>
+                <select id="voice-pair-select" onchange="updateVoiceChart()" class="w-full bg-purple-950 text-xs p-2.5 rounded-xl border border-purple-700/60 text-white font-bold shadow-md">
+                    <option value="FX:EURUSD">EUR/USD (Real)</option>
+                    <option value="FX:GBPUSD">GBP/USD (Real)</option>
+                    <option value="FX:USDJPY">USD/JPY (Real)</option>
+                    <option value="FX:AUDUSD">AUD/USD (Real)</option>
+                    <option value="FX:CADJPY">CAD/JPY (Real)</option>
+                </select>
+            </div>
+
+            <!-- Clean & Expanded Live TradingView Chart -->
+            <div class="glass-card p-3 rounded-2xl my-1 shadow-xl">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] font-bold text-emerald-400">● LIVE QUOTEX MARKET CHART</span>
+                    <span id="candle-timer" class="bg-purple-900/80 border border-purple-400 text-purple-200 text-[10px] px-2.5 py-0.5 rounded-full font-bold">⏱️ 60s Candle</span>
                 </div>
+                <div id="tv-voice-container" class="h-60 rounded-xl overflow-hidden"></div>
+            </div>
+
+            <!-- Status Text -->
+            <div class="text-center my-1">
                 <p id="sufia-status" class="text-xs font-bold text-purple-200 tracking-wide">সুফিয়া শুনছে... ট্রেডিং প্রশ্ন করুন</p>
             </div>
 
-            <div class="glass-card p-3 rounded-2xl mb-1">
-                <div class="flex justify-between items-center mb-1.5">
-                    <span class="text-[10px] font-bold text-emerald-400">● LIVE TRADINGVIEW CHART</span>
-                    <span id="candle-timer" class="bg-purple-900/80 border border-purple-400 text-purple-200 text-[10px] px-2 py-0.5 rounded-full font-bold">⏱️ 60s Candle</span>
-                </div>
-                <div id="tv-voice-container" class="h-44 rounded-xl overflow-hidden"></div>
-            </div>
-
-            <div class="flex justify-center items-center my-1">
-                <button onclick="startVoiceRecognition()" class="w-12 h-12 rounded-full purple-glow-btn text-black flex items-center justify-center font-bold">
-                    <svg class="icon-svg text-black w-5 h-5" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
+            <!-- Repositioned & Enlarged Voice Mic Button -->
+            <div class="flex justify-center items-center mt-2 mb-4">
+                <button onclick="startVoiceRecognition()" class="w-16 h-16 rounded-full purple-glow-btn text-black flex items-center justify-center font-bold transition-transform active:scale-95 shadow-2xl">
+                    <svg class="icon-svg text-black w-8 h-8" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
                 </button>
             </div>
         </div>
 
-        <!-- SCREEN 3: QX LIVE CHART UPLOAD (TOP POSITION FIX) -->
+        <!-- SCREEN 3: QX LIVE CHART UPLOAD -->
         <div id="screen-auto" class="screen pt-1">
             <div class="flex justify-between items-center mb-2">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
@@ -442,7 +453,7 @@ HTML_TEMPLATE = """
                 </div>
             </div>
 
-            <!-- Win Rate, Accuracy, Confirm Box (Initial Default: -- %) -->
+            <!-- Win Rate, Accuracy, Confirm Box -->
             <div class="grid grid-cols-3 gap-2.5 my-1.5">
                 <div class="bg-purple-950/80 p-3 rounded-xl border border-purple-800/80 text-center shadow-md">
                     <p class="text-[9px] text-gray-400 font-bold uppercase">WIN RATE</p>
@@ -514,7 +525,7 @@ HTML_TEMPLATE = """
             activeScreen.scrollTop = 0;
             
             if(screenId === 'screen-voice') {
-                renderVoiceChart();
+                updateVoiceChart();
             }
         }
 
@@ -554,7 +565,6 @@ HTML_TEMPLATE = """
             dirElem.innerText = "SCANNING LIVE MARKET...";
             dirElem.className = "text-xl font-black text-yellow-400 animate-pulse my-1.5";
 
-            // 4.5 sec Animation Scanning
             setTimeout(async () => {
                 const res = await fetch(`/api/signal?symbol=${encodeURIComponent(pair)}`);
                 const data = await res.json();
@@ -569,7 +579,6 @@ HTML_TEMPLATE = """
 
                 speakText(`ম্যানুয়াল সিগন্যাল সম্পন্ন। ট্রেড সিগন্যাল হলো ${data.signal}`);
 
-                // 15 seconds trade active timer
                 let remainingSec = 15;
                 const badge = document.getElementById('manual-timer-badge');
                 const secElem = document.getElementById('manual-active-sec');
@@ -585,7 +594,6 @@ HTML_TEMPLATE = """
                         clearInterval(manualSignalInterval);
                         badge.classList.add('hidden');
                         
-                        // Waiting State & Reset Percentages to -- %
                         dirElem.innerText = "WAITING FOR NEXT SCAN";
                         dirElem.className = "text-xl font-black text-purple-300 my-1.5";
                         document.getElementById('manual-sig-reason').innerText = "Click SCAN button to analyze next candle";
@@ -598,11 +606,12 @@ HTML_TEMPLATE = """
             }, 4000);
         }
 
-        function renderVoiceChart() {
+        function updateVoiceChart() {
+            const selectedSymbol = document.getElementById('voice-pair-select').value;
             document.getElementById('tv-voice-container').innerHTML = '';
             new TradingView.widget({
                 "autosize": true,
-                "symbol": "FX:EURUSD",
+                "symbol": selectedSymbol,
                 "interval": "1",
                 "timezone": "Etc/UTC",
                 "theme": "dark",
@@ -612,6 +621,8 @@ HTML_TEMPLATE = """
                 "enable_publishing": false,
                 "hide_side_toolbar": true,
                 "hide_top_toolbar": true,
+                "disabled_features": ["header_symbol_search", "header_indicators", "header_chart_type", "header_compare", "header_undo_redo", "header_screenshot", "volume_force_overlay"],
+                "enabled_features": [],
                 "container_id": "tv-voice-container"
             });
         }
