@@ -132,7 +132,7 @@ def analyze_real_market(symbol="EURUSD=X"):
     }
 
 # ==========================================
-# FRONTEND HTML / TAILWIND UI (100% PERFECT FIT)
+# FRONTEND HTML / TAILWIND UI (NORMAL CLEAN FONT + PERFECT FIT)
 # ==========================================
 
 HTML_TEMPLATE = """
@@ -145,25 +145,19 @@ HTML_TEMPLATE = """
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif !important; }
         
         body { 
             background: #06000d; 
             color: #ffffff; 
-            font-family: 'Plus Jakarta Sans', sans-serif;
             height: 100vh; 
             width: 100vw; 
             overflow: hidden; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
-        }
-
-        .gothic-font { 
-            font-family: 'UnifrakturMaguntia', cursive !important; 
-            letter-spacing: 0.5px;
         }
         
         .mobile-container { 
@@ -174,7 +168,7 @@ HTML_TEMPLATE = """
             position: relative; 
             display: flex; 
             flex-direction: column; 
-            padding: 16px 16px 90px 16px; 
+            padding: 16px 16px 95px 16px; 
             overflow-y: auto; 
         }
 
@@ -203,7 +197,7 @@ HTML_TEMPLATE = """
             overflow: hidden; 
         }
 
-        /* Fixed Bottom Navigation - Lifted Up to Prevent Clipping */
+        /* Fixed Bottom Navigation - Lifted Up */
         .bottom-nav { 
             position: fixed;
             bottom: 18px;
@@ -220,7 +214,6 @@ HTML_TEMPLATE = """
             z-index: 9999;
         }
 
-        /* Soundwave animations exactly matching screenshot */
         @keyframes waveAnim { 0%, 100% { height: 8px; } 50% { height: 38px; } }
         .wave-bar { width: 4px; background: #c084fc; border-radius: 4px; animation: waveAnim 1.2s infinite ease-in-out; }
         .wave-bar:nth-child(2) { animation-delay: 0.1s; height: 18px; } 
@@ -247,7 +240,7 @@ HTML_TEMPLATE = """
                     </div>
                     <div>
                         <p class="text-xs text-gray-400 font-medium">Welcome 👋</p>
-                        <h2 class="text-base font-bold gothic-font text-white tracking-wide">User: Yasin</h2>
+                        <h2 class="text-base font-extrabold text-white tracking-wide">User: Yasin</h2>
                     </div>
                 </div>
                 <button onclick="navTo('screen-profile')" class="w-10 h-10 rounded-full glass-pill flex items-center justify-center text-purple-200">
@@ -255,26 +248,26 @@ HTML_TEMPLATE = """
                 </button>
             </div>
 
-            <!-- Title Header Gothic -->
+            <!-- Title Header Normal Clean Font -->
             <div class="my-1">
-                <h1 class="text-3xl font-normal gothic-font text-white leading-snug">Your AI Trading</h1>
-                <h1 class="text-3xl font-normal gothic-font text-white leading-snug">Journey Starts Up</h1>
+                <h1 class="text-2xl font-black text-white leading-snug tracking-tight">Your AI Trading</h1>
+                <h1 class="text-2xl font-black text-purple-300 leading-snug tracking-tight">Journey Starts Up</h1>
             </div>
 
             <!-- Horizontal Chips Navigation -->
             <div class="flex gap-2 overflow-x-auto no-scrollbar py-0.5">
-                <button onclick="navTo('screen-voice')" class="glass-pill px-4 py-2 text-xs font-semibold gothic-font text-purple-200 flex items-center gap-2 whitespace-nowrap">
+                <button onclick="navTo('screen-voice')" class="glass-pill px-4 py-2 text-xs font-bold text-purple-200 flex items-center gap-2 whitespace-nowrap">
                     <svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg> Voice Chat
                 </button>
-                <button onclick="navTo('screen-auto')" class="glass-pill px-4 py-2 text-xs font-semibold gothic-font text-purple-200 flex items-center gap-2 whitespace-nowrap">
+                <button onclick="navTo('screen-auto')" class="glass-pill px-4 py-2 text-xs font-bold text-purple-200 flex items-center gap-2 whitespace-nowrap">
                     <svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg> Auto Trade
                 </button>
-                <button onclick="navTo('screen-signal')" class="glass-pill px-4 py-2 text-xs font-semibold gothic-font text-purple-200 flex items-center gap-2 whitespace-nowrap">
+                <button onclick="navTo('screen-signal')" class="glass-pill px-4 py-2 text-xs font-bold text-purple-200 flex items-center gap-2 whitespace-nowrap">
                     <svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z"/></svg> Live Signal
                 </button>
             </div>
 
-            <p class="text-xs font-bold gothic-font text-purple-200 uppercase tracking-wider my-0.5">Start Creating</p>
+            <p class="text-xs font-extrabold text-purple-300 uppercase tracking-widest my-0.5">START CREATING</p>
 
             <!-- Voice Studio Banner -->
             <div onclick="navTo('screen-voice')" class="voice-card-bg p-5 rounded-3xl cursor-pointer shadow-xl relative flex flex-col justify-between h-36">
@@ -287,14 +280,14 @@ HTML_TEMPLATE = """
                     </div>
                 </div>
                 <div>
-                    <h3 class="text-xl font-normal gothic-font text-white">Voice Studio</h3>
-                    <p class="text-xs text-purple-200/80 mt-0.5">Ask SUFIA about trading</p>
+                    <h3 class="text-lg font-black text-white">Voice Studio</h3>
+                    <p class="text-xs text-purple-200/80 mt-0.5 font-medium">Ask SUFIA about trading</p>
                 </div>
             </div>
 
-            <!-- 2 Grid Action Cards -->
+            <!-- 2 Grid Action Cards (Increased Height to fill gap) -->
             <div class="grid grid-cols-2 gap-3.5 my-1">
-                <div onclick="navTo('screen-auto')" class="glass-card p-4 rounded-2xl cursor-pointer relative flex flex-col justify-between h-36">
+                <div onclick="navTo('screen-auto')" class="glass-card p-4 rounded-2xl cursor-pointer relative flex flex-col justify-between h-40">
                     <div class="flex justify-between items-start">
                         <div class="w-9 h-9 rounded-xl bg-purple-900/50 border border-purple-500/30 flex items-center justify-center">
                             <svg class="icon-svg text-purple-200" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
@@ -302,12 +295,12 @@ HTML_TEMPLATE = """
                         <svg class="icon-svg text-gray-400 text-xs" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
                     </div>
                     <div>
-                        <h4 class="text-xs font-normal gothic-font text-white">Auto Trade Place</h4>
-                        <p class="text-[10px] text-purple-200/70 mt-1 leading-snug">SUFIA auto trades on Quotex for you</p>
+                        <h4 class="text-xs font-extrabold text-white">Auto Trade Place</h4>
+                        <p class="text-[10px] text-purple-200/70 mt-1 leading-snug font-medium">SUFIA auto trades on Quotex for you</p>
                     </div>
                 </div>
 
-                <div onclick="navTo('screen-signal')" class="glass-card p-4 rounded-2xl cursor-pointer relative flex flex-col justify-between h-36">
+                <div onclick="navTo('screen-signal')" class="glass-card p-4 rounded-2xl cursor-pointer relative flex flex-col justify-between h-40">
                     <div class="flex justify-between items-start">
                         <div class="w-9 h-9 rounded-xl bg-purple-900/50 border border-purple-500/30 flex items-center justify-center">
                             <svg class="icon-svg text-purple-200" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z"/></svg>
@@ -315,8 +308,8 @@ HTML_TEMPLATE = """
                         <svg class="icon-svg text-gray-400 text-xs" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
                     </div>
                     <div>
-                        <h4 class="text-xs font-normal gothic-font text-white">QX live Signal</h4>
-                        <p class="text-[10px] text-purple-200/70 mt-1 leading-snug">SUFIA watches live charts & gives voice signals</p>
+                        <h4 class="text-xs font-extrabold text-white">QX live Signal</h4>
+                        <p class="text-[10px] text-purple-200/70 mt-1 leading-snug font-medium">SUFIA watches live charts & gives voice signals</p>
                     </div>
                 </div>
             </div>
@@ -326,7 +319,7 @@ HTML_TEMPLATE = """
         <div id="screen-voice" class="screen">
             <div class="flex justify-between items-center pt-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
-                <span class="text-xs font-bold gothic-font text-purple-200">SUFIA VOICE STUDIO</span>
+                <span class="text-xs font-bold text-purple-200">SUFIA VOICE STUDIO</span>
                 <span class="bg-emerald-950 border border-emerald-500 text-emerald-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold">● LIVE</span>
             </div>
 
@@ -334,7 +327,7 @@ HTML_TEMPLATE = """
                 <div class="w-16 h-16 mx-auto rounded-full purple-glow-btn flex items-center justify-center my-1">
                     <svg class="icon-svg text-black w-6 h-6" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
                 </div>
-                <p id="sufia-status" class="text-xs font-bold text-purple-200 tracking-wide">মাস্টার সুফিয়া শুনছে... কথা বলুন</p>
+                <p id="sufia-status" class="text-xs font-bold text-purple-200 tracking-wide">সুফিয়া শুনছে... ট্রেডিং প্রশ্ন করুন</p>
             </div>
 
             <div class="glass-card p-3 rounded-2xl mb-2">
@@ -360,7 +353,7 @@ HTML_TEMPLATE = """
         <div id="screen-auto" class="screen">
             <div class="flex justify-between items-center pt-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
-                <h1 class="text-xs font-bold gothic-font text-purple-200">Real Auto Technical Scan</h1>
+                <h1 class="text-xs font-bold text-purple-200">Real Auto Technical Scan</h1>
             </div>
 
             <div class="glass-card p-5 space-y-4 my-auto">
@@ -385,7 +378,7 @@ HTML_TEMPLATE = """
         <div id="screen-signal" class="screen">
             <div class="flex justify-between items-center pt-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
-                <h1 class="text-xs font-bold gothic-font text-purple-200">Real-Time Market Signal</h1>
+                <h1 class="text-xs font-bold text-purple-200">Real-Time Market Signal</h1>
             </div>
 
             <div class="glass-card p-5 space-y-4 my-auto">
@@ -410,20 +403,20 @@ HTML_TEMPLATE = """
         <div id="screen-profile" class="screen">
             <div class="flex justify-between items-center pt-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
-                <h1 class="text-xs font-bold gothic-font text-purple-200">User Profile</h1>
+                <h1 class="text-xs font-bold text-purple-200">User Profile</h1>
             </div>
 
             <div class="glass-card p-6 text-center space-y-3 my-auto">
                 <div class="w-16 h-16 rounded-full bg-red-950 border-2 border-red-500 mx-auto flex items-center justify-center">
                     <svg class="icon-svg text-red-400 w-8 h-8" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2v1h1a3 3 0 0 1 3 3v2h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-1v1a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3v-1H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h1V7a3 3 0 0 1 3-3h1V4a2 2 0 0 1 2-2zm-3 7H7v2h2V9zm8 0h-2v2h2V9z"/></svg>
                 </div>
-                <h2 class="text-base font-bold gothic-font text-white">Yasin</h2>
+                <h2 class="text-base font-bold text-white">Yasin</h2>
                 <p class="text-xs text-purple-300">User Code: SPK-800Y0BIM</p>
                 <span class="bg-purple-900/60 border border-purple-400 text-purple-200 text-xs px-3.5 py-1 rounded-full inline-block font-semibold">✨ SUFIA Engine Active</span>
             </div>
         </div>
 
-        <!-- FIXED FLOATING NAVIGATION BAR (VISIBLE ABOVE SCREEN BOTTOM) -->
+        <!-- FIXED FLOATING NAVIGATION BAR -->
         <div class="bottom-nav flex justify-between items-center">
             <button onclick="navTo('screen-home')" class="text-purple-300 p-2"><svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
             <button onclick="navTo('screen-auto')" class="text-gray-400 p-2"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg></button>
