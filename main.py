@@ -312,7 +312,7 @@ HTML_TEMPLATE = """
             </div>
         </div>
 
-        <!-- SCREEN 2: VOICE STUDIO (100% CLEANED LIVE CHART) -->
+        <!-- SCREEN 2: VOICE STUDIO -->
         <div id="screen-voice" class="screen pt-1">
             <div class="flex justify-between items-center">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold flex items-center gap-1">‹ Back</button>
@@ -606,7 +606,6 @@ HTML_TEMPLATE = """
             }, 4000);
         }
 
-        # Cleanest TradingView Widget (Hiding Volume, Logo, Header Overlay Text)
         function updateVoiceChart() {
             const selectedSymbol = document.getElementById('voice-pair-select').value;
             document.getElementById('tv-voice-container').innerHTML = '';
