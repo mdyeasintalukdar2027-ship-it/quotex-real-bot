@@ -117,7 +117,7 @@ def analyze_real_market(symbol="EURUSD=X"):
     }
 
 # ==========================================
-# FRONTEND HTML / TAILWIND UI (EXACT MATCH)
+# FRONTEND HTML / TAILWIND UI (100% EXACT MATCH)
 # ==========================================
 
 HTML_TEMPLATE = """
@@ -130,9 +130,9 @@ HTML_TEMPLATE = """
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif !important; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body { 
             background: #06000d; 
@@ -143,6 +143,12 @@ HTML_TEMPLATE = """
             display: flex; 
             justify-content: center; 
             align-items: center; 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        
+        .gothic-text {
+            font-family: 'UnifrakturMaguntia', cursive !important;
+            letter-spacing: 0.5px;
         }
 
         .mobile-container { 
@@ -153,16 +159,15 @@ HTML_TEMPLATE = """
             position: relative; 
             display: flex; 
             flex-direction: column; 
-            justify-content: space-between;
-            padding: 14px 16px 80px 16px; 
-            overflow: hidden; 
+            padding: 14px 16px 85px 16px; 
+            overflow-y: auto; 
         }
 
         .glass-card { 
             background: linear-gradient(135deg, rgba(42, 14, 76, 0.75), rgba(20, 6, 40, 0.85)); 
             border: 1px solid rgba(168, 85, 247, 0.25); 
             backdrop-filter: blur(16px); 
-            border-radius: 22px; 
+            border-radius: 20px; 
         }
         
         .glass-pill { 
@@ -207,7 +212,7 @@ HTML_TEMPLATE = """
         .wave-bar:nth-child(5) { animation-delay: 0.4s; height: 32px; } 
         .wave-bar:nth-child(6) { animation-delay: 0.5s; height: 22px; }
         
-        .screen { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: space-between; }
+        .screen { display: none; width: 100%; flex-direction: column; gap: 12px; }
         .screen.active { display: flex; }
         .icon-svg { width: 18px; height: 18px; fill: currentColor; display: inline-block; vertical-align: middle; }
     </style>
@@ -225,7 +230,7 @@ HTML_TEMPLATE = """
                     </div>
                     <div>
                         <p class="text-[11px] text-gray-400 font-medium">Welcome 👋</p>
-                        <h2 class="text-sm font-extrabold text-white tracking-wide">User: Yasin</h2>
+                        <h2 class="text-xs font-extrabold text-white tracking-wide gothic-text">User: Yasin</h2>
                     </div>
                 </div>
                 <button onclick="navTo('screen-profile')" class="w-9 h-9 rounded-full glass-pill flex items-center justify-center text-purple-200">
@@ -234,25 +239,25 @@ HTML_TEMPLATE = """
             </div>
 
             <!-- Header Title -->
-            <div>
-                <h1 class="text-2xl font-black text-white leading-snug tracking-tight">Your AI Trading</h1>
-                <h1 class="text-2xl font-black text-purple-300 leading-snug tracking-tight">Journey Starts Up</h1>
+            <div class="my-0.5">
+                <h1 class="text-2xl font-black text-white leading-snug tracking-tight gothic-text">Your AI Trading</h1>
+                <h1 class="text-2xl font-black text-purple-300 leading-snug tracking-tight gothic-text">Journey Starts Up</h1>
             </div>
 
             <!-- Chips Bar -->
             <div class="flex gap-2 overflow-x-auto no-scrollbar">
-                <button onclick="navTo('screen-voice')" class="glass-pill px-3.5 py-1.5 text-xs font-bold text-purple-200 flex items-center gap-1.5 whitespace-nowrap">
+                <button onclick="navTo('screen-voice')" class="glass-pill px-3.5 py-1.5 text-xs font-bold text-purple-200 flex items-center gap-1.5 whitespace-nowrap gothic-text">
                     <svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg> Voice Chat
                 </button>
-                <button onclick="navTo('screen-auto')" class="glass-pill px-3.5 py-1.5 text-xs font-bold text-purple-200 flex items-center gap-1.5 whitespace-nowrap">
+                <button onclick="navTo('screen-auto')" class="glass-pill px-3.5 py-1.5 text-xs font-bold text-purple-200 flex items-center gap-1.5 whitespace-nowrap gothic-text">
                     <svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg> Auto Trade
                 </button>
-                <button onclick="navTo('screen-signal')" class="glass-pill px-3.5 py-1.5 text-xs font-bold text-purple-200 flex items-center gap-1.5 whitespace-nowrap">
+                <button onclick="navTo('screen-signal')" class="glass-pill px-3.5 py-1.5 text-xs font-bold text-purple-200 flex items-center gap-1.5 whitespace-nowrap gothic-text">
                     <svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z"/></svg> Live Signal
                 </button>
             </div>
 
-            <p class="text-[11px] font-extrabold text-purple-300 uppercase tracking-widest">START CREATING</p>
+            <p class="text-[11px] font-extrabold text-purple-300 uppercase tracking-widest gothic-text">START CREATING</p>
 
             <!-- Voice Studio Banner -->
             <div onclick="navTo('screen-voice')" class="voice-card-bg p-4 rounded-2xl cursor-pointer shadow-xl flex flex-col justify-between h-32">
@@ -265,13 +270,13 @@ HTML_TEMPLATE = """
                     </div>
                 </div>
                 <div>
-                    <h3 class="text-base font-black text-white">Voice Studio</h3>
+                    <h3 class="text-base font-black text-white gothic-text">Voice Studio</h3>
                     <p class="text-[11px] text-purple-200/80 font-medium">Ask SUFIA about trading</p>
                 </div>
             </div>
 
-            <!-- Bottom 2 Cards (EXACT SLIGHT HEIGHT EXPANSION WITH GAP) -->
-            <div class="grid grid-cols-2 gap-3 h-[180px]">
+            <!-- Bottom 2 Cards (EXACT HEIGHT MATCH TO YOUR RED MARKING WITH GAP) -->
+            <div class="grid grid-cols-2 gap-3 h-[185px]">
                 <div onclick="navTo('screen-auto')" class="glass-card p-4 rounded-2xl cursor-pointer flex flex-col justify-between h-full">
                     <div class="flex justify-between items-start">
                         <div class="w-8 h-8 rounded-xl bg-purple-900/50 border border-purple-500/30 flex items-center justify-center">
@@ -280,7 +285,7 @@ HTML_TEMPLATE = """
                         <svg class="icon-svg text-gray-400 text-xs" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
                     </div>
                     <div>
-                        <h4 class="text-xs font-extrabold text-white">Auto Trade Place</h4>
+                        <h4 class="text-xs font-extrabold text-white gothic-text">Auto Trade Place</h4>
                         <p class="text-[10px] text-purple-200/70 mt-1 leading-snug font-medium">SUFIA auto trades on Quotex for you</p>
                     </div>
                 </div>
@@ -293,7 +298,7 @@ HTML_TEMPLATE = """
                         <svg class="icon-svg text-gray-400 text-xs" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
                     </div>
                     <div>
-                        <h4 class="text-xs font-extrabold text-white">QX live Signal</h4>
+                        <h4 class="text-xs font-extrabold text-white gothic-text">QX live Signal</h4>
                         <p class="text-[10px] text-purple-200/70 mt-1 leading-snug font-medium">SUFIA watches live charts & gives voice signals</p>
                     </div>
                 </div>
@@ -304,7 +309,7 @@ HTML_TEMPLATE = """
         <div id="screen-voice" class="screen">
             <div class="flex justify-between items-center pt-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
-                <span class="text-xs font-bold text-purple-200">SUFIA VOICE STUDIO</span>
+                <span class="text-xs font-bold text-purple-200 gothic-text">SUFIA VOICE STUDIO</span>
                 <span class="bg-emerald-950 border border-emerald-500 text-emerald-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold">● LIVE</span>
             </div>
 
@@ -334,7 +339,7 @@ HTML_TEMPLATE = """
         <div id="screen-auto" class="screen">
             <div class="flex justify-between items-center pt-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
-                <h1 class="text-xs font-bold text-purple-200">Real Auto Technical Scan</h1>
+                <h1 class="text-xs font-bold text-purple-200 gothic-text">Real Auto Technical Scan</h1>
             </div>
 
             <div class="glass-card p-5 space-y-4 my-auto">
@@ -343,7 +348,7 @@ HTML_TEMPLATE = """
                     <option value="GBPUSD=X">GBP/USD (Real Live)</option>
                 </select>
 
-                <button onclick="startAutoScan()" class="purple-glow-btn text-black font-extrabold text-xs py-3.5 rounded-xl w-full">
+                <button onclick="startAutoScan()" class="purple-glow-btn text-black font-extrabold text-xs py-3.5 rounded-xl w-full gothic-text">
                     Fetch Real Technical Signal
                 </button>
 
@@ -359,7 +364,7 @@ HTML_TEMPLATE = """
         <div id="screen-signal" class="screen">
             <div class="flex justify-between items-center pt-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
-                <h1 class="text-xs font-bold text-purple-200">Real-Time Market Signal</h1>
+                <h1 class="text-xs font-bold text-purple-200 gothic-text">Real-Time Market Signal</h1>
             </div>
 
             <div class="glass-card p-5 space-y-4 my-auto">
@@ -368,7 +373,7 @@ HTML_TEMPLATE = """
                     <option value="GBPUSD=X">GBP/USD (Real Live)</option>
                 </select>
 
-                <button onclick="fetchSignal()" class="purple-glow-btn text-black font-extrabold text-xs py-3.5 rounded-xl w-full">
+                <button onclick="fetchSignal()" class="purple-glow-btn text-black font-extrabold text-xs py-3.5 rounded-xl w-full gothic-text">
                     Analyze Live Candles
                 </button>
 
@@ -384,14 +389,14 @@ HTML_TEMPLATE = """
         <div id="screen-profile" class="screen">
             <div class="flex justify-between items-center pt-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
-                <h1 class="text-xs font-bold text-purple-200">User Profile</h1>
+                <h1 class="text-xs font-bold text-purple-200 gothic-text">User Profile</h1>
             </div>
 
             <div class="glass-card p-6 text-center space-y-3 my-auto">
                 <div class="w-16 h-16 rounded-full bg-red-950 border-2 border-red-500 mx-auto flex items-center justify-center">
                     <svg class="icon-svg text-red-400 w-8 h-8" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2v1h1a3 3 0 0 1 3 3v2h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-1v1a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3v-1H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h1V7a3 3 0 0 1 3-3h1V4a2 2 0 0 1 2-2zm-3 7H7v2h2V9zm8 0h-2v2h2V9z"/></svg>
                 </div>
-                <h2 class="text-base font-bold text-white">Yasin</h2>
+                <h2 class="text-base font-bold text-white gothic-text">Yasin</h2>
                 <p class="text-xs text-purple-300">User Code: SPK-800Y0BIM</p>
                 <span class="bg-purple-900/60 border border-purple-400 text-purple-200 text-xs px-3.5 py-1 rounded-full inline-block font-semibold">✨ SUFIA Engine Active</span>
             </div>
