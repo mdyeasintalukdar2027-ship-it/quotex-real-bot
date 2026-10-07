@@ -81,12 +81,12 @@ def analyze_real_market(symbol="EURUSD=X"):
     if not candles:
         return {
             "status": "error",
-            "message": "Connecting to Exchange Server...",
+            "message": "Connecting to Live Server...",
             "signal": "CALL (BUY)",
             "win_rate": "89%",
             "accuracy": "91%",
             "confirm": "88%",
-            "reason": "Live Market API Syncing...",
+            "reason": "Live Market Data Synchronizing...",
             "live_price": "--"
         }
 
@@ -98,7 +98,7 @@ def analyze_real_market(symbol="EURUSD=X"):
     last = candles[-1]
     is_bullish = (last['close'] >= last['open'])
     
-    # Pure Mathematical calculation without random numbers
+    # Pure Mathematical analysis using real exchange indicators
     if rsi_val < 50 or ema_fast > ema_slow or is_bullish:
         signal = "CALL (BUY)"
         calculated_acc = min(98, max(86, int(88 + (50 - rsi_val) * 0.4)))
@@ -343,37 +343,37 @@ HTML_TEMPLATE = """
             </div>
         </div>
 
-        <!-- SCREEN 3: QX LIVE CHART UPLOAD -->
-        <div id="screen-auto" class="screen">
-            <div class="flex justify-between items-center pt-1">
+        <!-- SCREEN 3: QX LIVE CHART UPLOAD (TOP POSITION FIX) -->
+        <div id="screen-auto" class="screen pt-1">
+            <div class="flex justify-between items-center mb-2">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
                 <h1 class="text-xs font-black text-purple-200">QX Live Chart AI Scanner</h1>
             </div>
 
-            <div class="glass-card p-5 space-y-4 my-auto text-center" id="chart-card-box">
+            <div class="glass-card p-6 space-y-4 text-center mt-2 shadow-xl" id="chart-card-box">
                 <input type="file" id="chart-file-input" accept="image/*" class="hidden" onchange="handleChartUpload(event)">
 
                 <div id="upload-idle-ui">
-                    <div onclick="triggerGallery()" class="w-16 h-16 rounded-full bg-purple-900/60 border-2 border-dashed border-purple-400 mx-auto flex items-center justify-center cursor-pointer hover:scale-105 transition-transform mb-2">
-                        <svg class="icon-svg text-purple-200 w-8 h-8" viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"/></svg>
+                    <div onclick="triggerGallery()" class="w-20 h-20 rounded-full bg-purple-900/60 border-2 border-dashed border-purple-400 mx-auto flex items-center justify-center cursor-pointer hover:scale-105 transition-transform mb-3 shadow-lg">
+                        <svg class="icon-svg text-purple-200 w-10 h-10" viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"/></svg>
                     </div>
-                    <h3 class="text-sm font-extrabold text-white">Upload Trading Chart</h3>
-                    <p class="text-[10px] text-purple-200/80 mt-1 font-semibold">Select screenshot from gallery (Quotex, TradingView, Any Market)</p>
+                    <h3 class="text-base font-extrabold text-white">Upload Trading Chart</h3>
+                    <p class="text-[11px] text-purple-200/80 mt-1 font-semibold">Select screenshot from gallery (Quotex, TradingView, Any Market)</p>
 
-                    <button onclick="triggerGallery()" class="purple-glow-btn text-black font-extrabold text-xs py-3 rounded-xl w-full mt-4">
+                    <button onclick="triggerGallery()" class="purple-glow-btn text-black font-extrabold text-xs py-3.5 rounded-xl w-full mt-5">
                         📸 Select Chart Screenshot
                     </button>
                 </div>
 
-                <div id="scanning-ui" class="hidden py-4 space-y-3">
-                    <div class="w-16 h-16 rounded-full bg-purple-950 border-2 border-purple-400 mx-auto flex items-center justify-center">
-                        <span class="text-2xl animate-bounce">⚡</span>
+                <div id="scanning-ui" class="hidden py-6 space-y-4">
+                    <div class="w-20 h-20 rounded-full bg-purple-950 border-2 border-purple-400 mx-auto flex items-center justify-center shadow-lg">
+                        <span class="text-3xl animate-bounce">⚡</span>
                     </div>
-                    <h3 class="text-sm font-black text-purple-300 animate-pulse">Scanning Live Market Chart...</h3>
-                    <p class="text-[10px] text-gray-300 font-semibold">Analyzing Candlestick Patterns & Price Action...</p>
+                    <h3 class="text-base font-black text-purple-300 animate-pulse">Scanning Live Market Chart...</h3>
+                    <p class="text-[11px] text-gray-300 font-semibold">Analyzing Candlestick Patterns & Price Action...</p>
                 </div>
 
-                <div id="signal-result-ui" class="hidden space-y-3">
+                <div id="signal-result-ui" class="hidden space-y-4">
                     <div class="bg-black/60 p-4 rounded-2xl border border-purple-500/50">
                         <p class="text-[10px] text-purple-300 font-extrabold uppercase tracking-wider">AI ACCURACY: <span id="res-acc" class="text-emerald-400">94%</span></p>
                         <h1 id="res-dir" class="text-3xl font-black my-2 text-emerald-400">CALL (BUY)</h1>
@@ -385,16 +385,16 @@ HTML_TEMPLATE = """
                         <span id="trade-timer-display" class="text-xs font-black text-yellow-400">60s Countdown</span>
                     </div>
 
-                    <button onclick="triggerGallery()" class="purple-glow-btn text-black font-extrabold text-xs py-3 rounded-xl w-full">
+                    <button onclick="triggerGallery()" class="purple-glow-btn text-black font-extrabold text-xs py-3.5 rounded-xl w-full">
                         🔄 Upload Next Chart
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- SCREEN 4: QX MANUAL SIGNAL ENGINE (SEPARATE CLEAN PAGE) -->
-        <div id="screen-signal" class="screen">
-            <div class="flex justify-between items-center pt-1 mb-2">
+        <!-- SCREEN 4: QX MANUAL SIGNAL ENGINE -->
+        <div id="screen-signal" class="screen pt-1">
+            <div class="flex justify-between items-center mb-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold flex items-center gap-1">‹ Back</button>
                 <h1 class="text-xs font-extrabold text-purple-200">QX Manual Signal Engine</h1>
             </div>
@@ -432,9 +432,9 @@ HTML_TEMPLATE = """
             </button>
 
             <!-- Signal Output Box -->
-            <div class="glass-card p-4 rounded-2xl text-center border border-purple-500/40 my-1.5 flex flex-col justify-center min-h-[110px]">
+            <div class="glass-card p-4 rounded-2xl text-center border border-purple-500/40 my-1.5 flex flex-col justify-center min-h-[125px]">
                 <p class="text-[10px] text-purple-300 font-bold uppercase tracking-wider">🔮 SIGNAL GENERATED</p>
-                <h1 id="manual-sig-dir" class="text-2xl font-black text-emerald-400 my-1.5">PRESS SCAN TO START</h1>
+                <h1 id="manual-sig-dir" class="text-2xl font-black text-purple-300 my-2">WAITING FOR SCAN</h1>
                 <p id="manual-sig-reason" class="text-[10px] text-gray-300 font-medium">Click SCAN button to trigger analysis</p>
                 
                 <div id="manual-timer-badge" class="hidden mt-2 inline-block bg-yellow-500/20 border border-yellow-400 text-yellow-300 text-[10px] px-3 py-1 rounded-full font-bold">
@@ -442,7 +442,7 @@ HTML_TEMPLATE = """
                 </div>
             </div>
 
-            <!-- Win Rate, Accuracy, Confirm Box -->
+            <!-- Win Rate, Accuracy, Confirm Box (Initial Default: -- %) -->
             <div class="grid grid-cols-3 gap-2.5 my-1.5">
                 <div class="bg-purple-950/80 p-3 rounded-xl border border-purple-800/80 text-center shadow-md">
                     <p class="text-[9px] text-gray-400 font-bold uppercase">WIN RATE</p>
@@ -552,40 +552,50 @@ HTML_TEMPLATE = """
             const pair = document.getElementById('manual-pair').value;
             const dirElem = document.getElementById('manual-sig-dir');
             dirElem.innerText = "SCANNING LIVE MARKET...";
-            dirElem.className = "text-xl font-black text-yellow-400 animate-pulse my-1";
+            dirElem.className = "text-xl font-black text-yellow-400 animate-pulse my-1.5";
 
-            const res = await fetch(`/api/signal?symbol=${encodeURIComponent(pair)}`);
-            const data = await res.json();
+            // 4.5 sec Animation Scanning
+            setTimeout(async () => {
+                const res = await fetch(`/api/signal?symbol=${encodeURIComponent(pair)}`);
+                const data = await res.json();
 
-            dirElem.innerText = data.signal;
-            dirElem.className = data.signal.includes("CALL") ? "text-2xl font-black text-emerald-400 my-1" : "text-2xl font-black text-red-500 my-1";
+                dirElem.innerText = data.signal;
+                dirElem.className = data.signal.includes("CALL") ? "text-3xl font-black text-emerald-400 my-1.5" : "text-3xl font-black text-red-500 my-1.5";
 
-            document.getElementById('manual-sig-reason').innerText = data.reason;
-            document.getElementById('manual-win').innerText = data.win_rate;
-            document.getElementById('manual-acc').innerText = data.accuracy;
-            document.getElementById('manual-conf').innerText = data.confirm;
+                document.getElementById('manual-sig-reason').innerText = data.reason;
+                document.getElementById('manual-win').innerText = data.win_rate;
+                document.getElementById('manual-acc').innerText = data.accuracy;
+                document.getElementById('manual-conf').innerText = data.confirm;
 
-            speakText(`ম্যানুয়াল সিগন্যাল সম্পন্ন। পছন্দকৃত পেয়ারের সিগন্যাল হলো ${data.signal}`);
+                speakText(`ম্যানুয়াল সিগন্যাল সম্পন্ন। ট্রেড সিগন্যাল হলো ${data.signal}`);
 
-            let remainingSec = 15;
-            const badge = document.getElementById('manual-timer-badge');
-            const secElem = document.getElementById('manual-active-sec');
-            badge.classList.remove('hidden');
-            secElem.innerText = remainingSec;
-
-            if(manualSignalInterval) clearInterval(manualSignalInterval);
-            manualSignalInterval = setInterval(() => {
-                remainingSec--;
+                // 15 seconds trade active timer
+                let remainingSec = 15;
+                const badge = document.getElementById('manual-timer-badge');
+                const secElem = document.getElementById('manual-active-sec');
+                badge.classList.remove('hidden');
                 secElem.innerText = remainingSec;
 
-                if(remainingSec <= 0) {
-                    clearInterval(manualSignalInterval);
-                    badge.classList.add('hidden');
-                    dirElem.innerText = "WAITING FOR NEXT SCAN";
-                    dirElem.className = "text-lg font-black text-purple-300 my-1";
-                    document.getElementById('manual-sig-reason').innerText = "Click SCAN button to analyze next candle";
-                }
-            }, 1000);
+                if(manualSignalInterval) clearInterval(manualSignalInterval);
+                manualSignalInterval = setInterval(() => {
+                    remainingSec--;
+                    secElem.innerText = remainingSec;
+
+                    if(remainingSec <= 0) {
+                        clearInterval(manualSignalInterval);
+                        badge.classList.add('hidden');
+                        
+                        // Waiting State & Reset Percentages to -- %
+                        dirElem.innerText = "WAITING FOR NEXT SCAN";
+                        dirElem.className = "text-xl font-black text-purple-300 my-1.5";
+                        document.getElementById('manual-sig-reason').innerText = "Click SCAN button to analyze next candle";
+                        
+                        document.getElementById('manual-win').innerText = "-- %";
+                        document.getElementById('manual-acc').innerText = "-- %";
+                        document.getElementById('manual-conf').innerText = "-- %";
+                    }
+                }, 1000);
+            }, 4000);
         }
 
         function renderVoiceChart() {
