@@ -312,7 +312,7 @@ HTML_TEMPLATE = """
             </div>
         </div>
 
-        <!-- SCREEN 2: VOICE STUDIO (UPDATED UI & PAIR SELECTOR) -->
+        <!-- SCREEN 2: VOICE STUDIO (100% CLEANED LIVE CHART) -->
         <div id="screen-voice" class="screen pt-1">
             <div class="flex justify-between items-center">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold flex items-center gap-1">‹ Back</button>
@@ -320,7 +320,7 @@ HTML_TEMPLATE = """
                 <span class="bg-emerald-950 border border-emerald-500 text-emerald-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold">● LIVE</span>
             </div>
 
-            <!-- Market Pair Selector for Voice Studio -->
+            <!-- Market Pair Selector -->
             <div class="my-1.5">
                 <label class="text-[10px] text-gray-300 font-bold block mb-1">Select Quotex Real Market Pair</label>
                 <select id="voice-pair-select" onchange="updateVoiceChart()" class="w-full bg-purple-950 text-xs p-2.5 rounded-xl border border-purple-700/60 text-white font-bold shadow-md">
@@ -332,7 +332,7 @@ HTML_TEMPLATE = """
                 </select>
             </div>
 
-            <!-- Clean & Expanded Live TradingView Chart -->
+            <!-- Clean Live TradingView Chart Box -->
             <div class="glass-card p-3 rounded-2xl my-1 shadow-xl">
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-[10px] font-bold text-emerald-400">● LIVE QUOTEX MARKET CHART</span>
@@ -341,12 +341,12 @@ HTML_TEMPLATE = """
                 <div id="tv-voice-container" class="h-60 rounded-xl overflow-hidden"></div>
             </div>
 
-            <!-- Status Text -->
+            <!-- Voice Status Text -->
             <div class="text-center my-1">
                 <p id="sufia-status" class="text-xs font-bold text-purple-200 tracking-wide">সুফিয়া শুনছে... ট্রেডিং প্রশ্ন করুন</p>
             </div>
 
-            <!-- Repositioned & Enlarged Voice Mic Button -->
+            <!-- Voice Mic Button -->
             <div class="flex justify-center items-center mt-2 mb-4">
                 <button onclick="startVoiceRecognition()" class="w-16 h-16 rounded-full purple-glow-btn text-black flex items-center justify-center font-bold transition-transform active:scale-95 shadow-2xl">
                     <svg class="icon-svg text-black w-8 h-8" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
@@ -606,6 +606,7 @@ HTML_TEMPLATE = """
             }, 4000);
         }
 
+        # Cleanest TradingView Widget (Hiding Volume, Logo, Header Overlay Text)
         function updateVoiceChart() {
             const selectedSymbol = document.getElementById('voice-pair-select').value;
             document.getElementById('tv-voice-container').innerHTML = '';
@@ -621,8 +622,30 @@ HTML_TEMPLATE = """
                 "enable_publishing": false,
                 "hide_side_toolbar": true,
                 "hide_top_toolbar": true,
-                "disabled_features": ["header_symbol_search", "header_indicators", "header_chart_type", "header_compare", "header_undo_redo", "header_screenshot", "volume_force_overlay"],
+                "disabled_features": [
+                    "header_symbol_search",
+                    "header_indicators",
+                    "header_chart_type",
+                    "header_compare",
+                    "header_undo_redo",
+                    "header_screenshot",
+                    "volume_force_overlay",
+                    "show_hide_button_in_legend",
+                    "legend_context_menu",
+                    "symbol_info_long_description",
+                    "control_bar"
+                ],
                 "enabled_features": [],
+                "studies": [],
+                "overrides": {
+                    "volumePaneSize": "tiny",
+                    "paneProperties.legendProperties.showStudyArguments": false,
+                    "paneProperties.legendProperties.showStudyTitles": false,
+                    "paneProperties.legendProperties.showStudyValues": false,
+                    "paneProperties.legendProperties.showSeriesTitle": false,
+                    "paneProperties.legendProperties.showSeriesOHLC": false,
+                    "mainSeriesProperties.showCountdown": false
+                },
                 "container_id": "tv-voice-container"
             });
         }
