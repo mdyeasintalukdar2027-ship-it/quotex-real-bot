@@ -117,7 +117,7 @@ def analyze_real_market(symbol="EURUSD=X"):
     }
 
 # ==========================================
-# FRONTEND HTML / TAILWIND UI (100% PERFECT FIT)
+# FRONTEND HTML / TAILWIND UI (FIXED FIT)
 # ==========================================
 
 HTML_TEMPLATE = """
@@ -137,25 +137,23 @@ HTML_TEMPLATE = """
         body { 
             background: #06000d; 
             color: #ffffff; 
-            height: 100vh; 
+            min-height: 100vh; 
             width: 100vw; 
-            overflow: hidden; 
             display: flex; 
             justify-content: center; 
-            align-items: center; 
+            align-items: flex-start; 
+            overflow-x: hidden;
         }
         
         .mobile-container { 
             width: 100%; 
             max-width: 420px; 
-            height: 100vh; 
+            min-height: 100vh; 
             background: radial-gradient(circle at top, #18032d 0%, #06000d 80%);
             position: relative; 
             display: flex; 
             flex-direction: column; 
-            justify-content: space-between;
-            padding: 12px 14px 75px 14px; 
-            overflow: hidden; 
+            padding: 12px 14px 85px 14px; 
         }
 
         .glass-card { 
@@ -183,7 +181,6 @@ HTML_TEMPLATE = """
             overflow: hidden; 
         }
 
-        /* Fixed Floating Bottom Nav */
         .bottom-nav { 
             position: fixed;
             bottom: 12px;
@@ -208,7 +205,7 @@ HTML_TEMPLATE = """
         .wave-bar:nth-child(5) { animation-delay: 0.4s; height: 28px; } 
         .wave-bar:nth-child(6) { animation-delay: 0.5s; height: 18px; }
         
-        .screen { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: space-between; }
+        .screen { display: none; width: 100%; flex-direction: column; gap: 10px; }
         .screen.active { display: flex; }
         .icon-svg { width: 16px; height: 16px; fill: currentColor; display: inline-block; vertical-align: middle; }
     </style>
@@ -216,7 +213,7 @@ HTML_TEMPLATE = """
 <body>
     <div class="mobile-container">
         
-        <!-- SCREEN 1: HOME PAGE (EXACT TICK MATCH) -->
+        <!-- SCREEN 1: HOME PAGE -->
         <div id="screen-home" class="screen active">
             <!-- Top Header -->
             <div class="flex justify-between items-center pt-0.5">
@@ -271,9 +268,9 @@ HTML_TEMPLATE = """
                 </div>
             </div>
 
-            <!-- Bottom 2 Cards (EXACT MATCH TO TICKED IMAGE) -->
-            <div class="grid grid-cols-2 gap-2.5 h-36">
-                <div onclick="navTo('screen-auto')" class="glass-card p-3 rounded-xl cursor-pointer flex flex-col justify-between h-full">
+            <!-- Bottom 2 Cards -->
+            <div class="grid grid-cols-2 gap-2.5">
+                <div onclick="navTo('screen-auto')" class="glass-card p-3 rounded-xl cursor-pointer flex flex-col justify-between h-28">
                     <div class="flex justify-between items-start">
                         <div class="w-7 h-7 rounded-lg bg-purple-900/50 border border-purple-500/30 flex items-center justify-center">
                             <svg class="icon-svg text-purple-200" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
@@ -286,7 +283,7 @@ HTML_TEMPLATE = """
                     </div>
                 </div>
 
-                <div onclick="navTo('screen-signal')" class="glass-card p-3 rounded-xl cursor-pointer flex flex-col justify-between h-full">
+                <div onclick="navTo('screen-signal')" class="glass-card p-3 rounded-xl cursor-pointer flex flex-col justify-between h-28">
                     <div class="flex justify-between items-start">
                         <div class="w-7 h-7 rounded-lg bg-purple-900/50 border border-purple-500/30 flex items-center justify-center">
                             <svg class="icon-svg text-purple-200" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z"/></svg>
@@ -313,7 +310,7 @@ HTML_TEMPLATE = """
                 <div class="w-12 h-12 mx-auto rounded-full purple-glow-btn flex items-center justify-center my-1">
                     <svg class="icon-svg text-black w-5 h-5" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
                 </div>
-                <p id="sufia-status" class="text-xs font-bold text-purple-200 tracking-wide">সুফিয়া শুনছে... ট্রেডিং প্রশ্ন করুন</p>
+                <p id="sufia-status" class="text-xs font-bold text-purple-200 tracking-wide">সুফিয়া শুনছে... কথা বলুন</p>
             </div>
 
             <div class="glass-card p-2.5 rounded-xl">
@@ -338,7 +335,7 @@ HTML_TEMPLATE = """
                 <h1 class="text-xs font-bold text-purple-200">Real Auto Technical Scan</h1>
             </div>
 
-            <div class="glass-card p-4 space-y-3 my-auto">
+            <div class="glass-card p-4 space-y-3">
                 <select id="auto-pair" class="w-full bg-purple-950 text-xs p-2.5 rounded-xl border border-purple-500/50 text-white font-bold">
                     <option value="EURUSD=X">EUR/USD (Real Live)</option>
                     <option value="GBPUSD=X">GBP/USD (Real Live)</option>
@@ -363,7 +360,7 @@ HTML_TEMPLATE = """
                 <h1 class="text-xs font-bold text-purple-200">Real-Time Market Signal</h1>
             </div>
 
-            <div class="glass-card p-4 space-y-3 my-auto">
+            <div class="glass-card p-4 space-y-3">
                 <select id="signal-pair" class="w-full bg-purple-950 text-xs p-2.5 rounded-xl border border-purple-500/50 text-white font-bold">
                     <option value="EURUSD=X">EUR/USD (Real Live)</option>
                     <option value="GBPUSD=X">GBP/USD (Real Live)</option>
@@ -388,7 +385,7 @@ HTML_TEMPLATE = """
                 <h1 class="text-xs font-bold text-purple-200">User Profile</h1>
             </div>
 
-            <div class="glass-card p-5 text-center space-y-2 my-auto">
+            <div class="glass-card p-5 text-center space-y-2">
                 <div class="w-14 h-14 rounded-full bg-red-950 border-2 border-red-500 mx-auto flex items-center justify-center">
                     <svg class="icon-svg text-red-400 w-7 h-7" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2v1h1a3 3 0 0 1 3 3v2h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-1v1a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3v-1H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h1V7a3 3 0 0 1 3-3h1V4a2 2 0 0 1 2-2zm-3 7H7v2h2V9zm8 0h-2v2h2V9z"/></svg>
                 </div>
