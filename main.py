@@ -117,7 +117,7 @@ def analyze_real_market(symbol="EURUSD=X"):
     }
 
 # ==========================================
-# FRONTEND HTML / TAILWIND UI (100% PERFECT MATCH)
+# FRONTEND HTML / TAILWIND UI (100% PERFECT FIT)
 # ==========================================
 
 HTML_TEMPLATE = """
@@ -154,7 +154,7 @@ HTML_TEMPLATE = """
             display: flex; 
             flex-direction: column; 
             justify-content: space-between;
-            padding: 12px 14px 72px 14px; 
+            padding: 12px 14px 75px 14px; 
             overflow: hidden; 
         }
 
@@ -183,9 +183,10 @@ HTML_TEMPLATE = """
             overflow: hidden; 
         }
 
+        /* Fixed Floating Bottom Nav */
         .bottom-nav { 
             position: fixed;
-            bottom: 10px;
+            bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
             width: calc(100% - 28px);
@@ -215,7 +216,7 @@ HTML_TEMPLATE = """
 <body>
     <div class="mobile-container">
         
-        <!-- SCREEN 1: HOME PAGE -->
+        <!-- SCREEN 1: HOME PAGE (EXACT TICK MATCH) -->
         <div id="screen-home" class="screen active">
             <!-- Top Header -->
             <div class="flex justify-between items-center pt-0.5">
@@ -270,7 +271,7 @@ HTML_TEMPLATE = """
                 </div>
             </div>
 
-            <!-- Bottom 2 Cards (EXACT SIZE AS TICKED IMAGE WITH SLIGHT FIT) -->
+            <!-- Bottom 2 Cards (EXACT MATCH TO TICKED IMAGE) -->
             <div class="grid grid-cols-2 gap-2.5 h-36">
                 <div onclick="navTo('screen-auto')" class="glass-card p-3 rounded-xl cursor-pointer flex flex-col justify-between h-full">
                     <div class="flex justify-between items-start">
@@ -312,7 +313,7 @@ HTML_TEMPLATE = """
                 <div class="w-12 h-12 mx-auto rounded-full purple-glow-btn flex items-center justify-center my-1">
                     <svg class="icon-svg text-black w-5 h-5" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
                 </div>
-                <p id="sufia-status" class="text-xs font-bold text-purple-200 tracking-wide">সুফিয়া শুনছে... কথা বলুন</p>
+                <p id="sufia-status" class="text-xs font-bold text-purple-200 tracking-wide">সুফিয়া শুনছে... ট্রেডিং প্রশ্ন করুন</p>
             </div>
 
             <div class="glass-card p-2.5 rounded-xl">
