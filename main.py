@@ -81,12 +81,12 @@ def analyze_real_market(symbol="EURUSD=X"):
     if not candles:
         return {
             "status": "error",
-            "message": "Live Market API Connecting...",
+            "message": "Connecting to Exchange Server...",
             "signal": "CALL (BUY)",
             "win_rate": "89%",
             "accuracy": "91%",
             "confirm": "88%",
-            "reason": "Connecting to Exchange Server...",
+            "reason": "Live Market API Syncing...",
             "live_price": "--"
         }
 
@@ -98,7 +98,7 @@ def analyze_real_market(symbol="EURUSD=X"):
     last = candles[-1]
     is_bullish = (last['close'] >= last['open'])
     
-    # Pure Mathematical calculation from real live candles
+    # Pure Mathematical calculation without random numbers
     if rsi_val < 50 or ema_fast > ema_slow or is_bullish:
         signal = "CALL (BUY)"
         calculated_acc = min(98, max(86, int(88 + (50 - rsi_val) * 0.4)))
@@ -163,7 +163,7 @@ HTML_TEMPLATE = """
             display: flex; 
             flex-direction: column; 
             padding: 14px 16px 85px 16px; 
-            overflow-y: auto; 
+            overflow: hidden; 
         }
 
         .glass-card { 
@@ -220,7 +220,7 @@ HTML_TEMPLATE = """
         .wave-bar:nth-child(5) { animation-delay: 0.4s; height: 32px; } 
         .wave-bar:nth-child(6) { animation-delay: 0.5s; height: 22px; }
         
-        .screen { display: none; width: 100%; flex-direction: column; gap: 12px; }
+        .screen { display: none; width: 100%; height: 100%; flex-direction: column; gap: 12px; overflow-y: auto; }
         .screen.active { display: flex; }
         .icon-svg { width: 18px; height: 18px; fill: currentColor; display: inline-block; vertical-align: middle; }
     </style>
@@ -392,11 +392,11 @@ HTML_TEMPLATE = """
             </div>
         </div>
 
-        <!-- SCREEN 4: QX MANUAL SIGNAL (PERFECT SPACING & UI BALANCE) -->
-        <div id="screen-signal" class="screen flex flex-col justify-between py-1 gap-3">
-            <div class="flex justify-between items-center pt-1">
-                <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
-                <h1 class="text-xs font-bold text-purple-200">QX Manual Signal Engine</h1>
+        <!-- SCREEN 4: QX MANUAL SIGNAL ENGINE (SEPARATE CLEAN PAGE) -->
+        <div id="screen-signal" class="screen">
+            <div class="flex justify-between items-center pt-1 mb-2">
+                <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold flex items-center gap-1">‹ Back</button>
+                <h1 class="text-xs font-extrabold text-purple-200">QX Manual Signal Engine</h1>
             </div>
 
             <!-- Market Pair & Timeframe Selectors -->
@@ -422,17 +422,17 @@ HTML_TEMPLATE = """
             </div>
 
             <!-- Candle Time Remaining Bar -->
-            <div class="bg-black/60 border border-yellow-500/50 py-2.5 px-3 rounded-xl text-center my-1 shadow-md">
+            <div class="bg-black/60 border border-yellow-500/50 py-2.5 px-3 rounded-xl text-center my-1.5 shadow-md">
                 <p id="manual-timer-bar" class="text-xs font-extrabold text-yellow-300 tracking-wide">⏰ CANDLE TIME REMAINING: 60s</p>
             </div>
 
             <!-- Scan & Predict Button -->
-            <button onclick="startManualScan()" class="scan-glow-btn text-black font-black text-sm py-3.5 rounded-xl w-full tracking-wide my-1 transition-transform active:scale-95">
+            <button onclick="startManualScan()" class="scan-glow-btn text-black font-black text-sm py-3.5 rounded-xl w-full tracking-wide my-1.5 transition-transform active:scale-95">
                 ⚡ SCAN & PREDICT
             </button>
 
             <!-- Signal Output Box -->
-            <div class="glass-card p-4 rounded-2xl text-center border border-purple-500/40 my-1 flex flex-col justify-center min-h-[110px]">
+            <div class="glass-card p-4 rounded-2xl text-center border border-purple-500/40 my-1.5 flex flex-col justify-center min-h-[110px]">
                 <p class="text-[10px] text-purple-300 font-bold uppercase tracking-wider">🔮 SIGNAL GENERATED</p>
                 <h1 id="manual-sig-dir" class="text-2xl font-black text-emerald-400 my-1.5">PRESS SCAN TO START</h1>
                 <p id="manual-sig-reason" class="text-[10px] text-gray-300 font-medium">Click SCAN button to trigger analysis</p>
@@ -443,7 +443,7 @@ HTML_TEMPLATE = """
             </div>
 
             <!-- Win Rate, Accuracy, Confirm Box -->
-            <div class="grid grid-cols-3 gap-2.5 my-1">
+            <div class="grid grid-cols-3 gap-2.5 my-1.5">
                 <div class="bg-purple-950/80 p-3 rounded-xl border border-purple-800/80 text-center shadow-md">
                     <p class="text-[9px] text-gray-400 font-bold uppercase">WIN RATE</p>
                     <p id="manual-win" class="text-xs font-black text-emerald-400 mt-1">-- %</p>
@@ -458,7 +458,7 @@ HTML_TEMPLATE = """
                 </div>
             </div>
 
-            <p class="text-[8px] text-gray-400 text-center font-medium my-1 leading-normal">This signal engine operates using price action strategy and institutional volume dynamics.</p>
+            <p class="text-[8px] text-gray-400 text-center font-medium my-2 leading-normal">This signal engine operates using price action strategy and institutional volume dynamics.</p>
         </div>
 
         <!-- SCREEN 5: USER PROFILE -->
@@ -509,7 +509,10 @@ HTML_TEMPLATE = """
 
         function navTo(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
+            const activeScreen = document.getElementById(screenId);
+            activeScreen.classList.add('active');
+            activeScreen.scrollTop = 0;
+            
             if(screenId === 'screen-voice') {
                 renderVoiceChart();
             }
