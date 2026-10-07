@@ -132,7 +132,7 @@ def analyze_real_market(symbol="EURUSD=X"):
     }
 
 # ==========================================
-# FRONTEND HTML / TAILWIND UI (100% MATCH)
+# FRONTEND HTML / TAILWIND UI (100% PERFECT FIT)
 # ==========================================
 
 HTML_TEMPLATE = """
@@ -174,9 +174,8 @@ HTML_TEMPLATE = """
             position: relative; 
             display: flex; 
             flex-direction: column; 
-            justify-content: space-between;
-            padding: 18px 18px 20px 18px; 
-            overflow: hidden; 
+            padding: 16px 16px 90px 16px; 
+            overflow-y: auto; 
         }
 
         .glass-card { 
@@ -204,14 +203,21 @@ HTML_TEMPLATE = """
             overflow: hidden; 
         }
 
+        /* Fixed Bottom Navigation - Lifted Up to Prevent Clipping */
         .bottom-nav { 
-            width: 100%;
-            background: rgba(22, 9, 40, 0.95); 
-            border: 1px solid rgba(168, 85, 247, 0.3); 
+            position: fixed;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 32px);
+            max-width: 388px;
+            background: rgba(22, 9, 40, 0.96); 
+            border: 1px solid rgba(168, 85, 247, 0.35); 
             backdrop-filter: blur(20px); 
             border-radius: 999px; 
             padding: 8px 16px; 
-            box-shadow: 0 -5px 25px rgba(0,0,0,0.8);
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.9);
+            z-index: 9999;
         }
 
         /* Soundwave animations exactly matching screenshot */
@@ -223,7 +229,7 @@ HTML_TEMPLATE = """
         .wave-bar:nth-child(5) { animation-delay: 0.4s; height: 32px; } 
         .wave-bar:nth-child(6) { animation-delay: 0.5s; height: 22px; }
         
-        .screen { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: space-between; }
+        .screen { display: none; width: 100%; flex-direction: column; gap: 12px; }
         .screen.active { display: flex; }
         .icon-svg { width: 18px; height: 18px; fill: currentColor; display: inline-block; vertical-align: middle; }
     </style>
@@ -231,7 +237,7 @@ HTML_TEMPLATE = """
 <body>
     <div class="mobile-container">
         
-        <!-- SCREEN 1: HOME PAGE (100% MATCH TO SCREENSHOT) -->
+        <!-- SCREEN 1: HOME PAGE -->
         <div id="screen-home" class="screen active">
             <!-- Top Header -->
             <div class="flex justify-between items-center pt-1">
@@ -256,21 +262,21 @@ HTML_TEMPLATE = """
             </div>
 
             <!-- Horizontal Chips Navigation -->
-            <div class="flex gap-2 overflow-x-auto no-scrollbar py-1">
-                <button onclick="navTo('screen-voice')" class="glass-pill px-4 py-2.5 text-xs font-semibold gothic-font text-purple-200 flex items-center gap-2 whitespace-nowrap">
+            <div class="flex gap-2 overflow-x-auto no-scrollbar py-0.5">
+                <button onclick="navTo('screen-voice')" class="glass-pill px-4 py-2 text-xs font-semibold gothic-font text-purple-200 flex items-center gap-2 whitespace-nowrap">
                     <svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg> Voice Chat
                 </button>
-                <button onclick="navTo('screen-auto')" class="glass-pill px-4 py-2.5 text-xs font-semibold gothic-font text-purple-200 flex items-center gap-2 whitespace-nowrap">
+                <button onclick="navTo('screen-auto')" class="glass-pill px-4 py-2 text-xs font-semibold gothic-font text-purple-200 flex items-center gap-2 whitespace-nowrap">
                     <svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg> Auto Trade
                 </button>
-                <button onclick="navTo('screen-signal')" class="glass-pill px-4 py-2.5 text-xs font-semibold gothic-font text-purple-200 flex items-center gap-2 whitespace-nowrap">
+                <button onclick="navTo('screen-signal')" class="glass-pill px-4 py-2 text-xs font-semibold gothic-font text-purple-200 flex items-center gap-2 whitespace-nowrap">
                     <svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z"/></svg> Live Signal
                 </button>
             </div>
 
             <p class="text-xs font-bold gothic-font text-purple-200 uppercase tracking-wider my-0.5">Start Creating</p>
 
-            <!-- Voice Studio Banner (Exact Layout & Visual Wave) -->
+            <!-- Voice Studio Banner -->
             <div onclick="navTo('screen-voice')" class="voice-card-bg p-5 rounded-3xl cursor-pointer shadow-xl relative flex flex-col justify-between h-36">
                 <div class="flex justify-between items-start">
                     <div class="w-10 h-10 rounded-full bg-purple-900/60 border border-purple-400/40 flex items-center justify-center">
@@ -286,7 +292,7 @@ HTML_TEMPLATE = """
                 </div>
             </div>
 
-            <!-- 2 Grid Action Cards (Match Screenshot Size) -->
+            <!-- 2 Grid Action Cards -->
             <div class="grid grid-cols-2 gap-3.5 my-1">
                 <div onclick="navTo('screen-auto')" class="glass-card p-4 rounded-2xl cursor-pointer relative flex flex-col justify-between h-36">
                     <div class="flex justify-between items-start">
@@ -314,17 +320,6 @@ HTML_TEMPLATE = """
                     </div>
                 </div>
             </div>
-
-            <!-- Bottom Navigation Bar (Match Screenshot Floating Style) -->
-            <div class="bottom-nav flex justify-between items-center mt-1">
-                <button onclick="navTo('screen-home')" class="text-purple-300 p-2"><svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
-                <button onclick="navTo('screen-auto')" class="text-gray-400 p-2"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg></button>
-                <button onclick="navTo('screen-voice')" class="w-12 h-12 rounded-full purple-glow-btn text-black flex items-center justify-center font-bold">
-                    <svg class="icon-svg text-black w-6 h-6" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
-                </button>
-                <button onclick="navTo('screen-signal')" class="text-gray-400 p-2"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z"/></svg></button>
-                <button onclick="navTo('screen-profile')" class="text-gray-400 p-2"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></button>
-            </div>
         </div>
 
         <!-- SCREEN 2: VOICE STUDIO -->
@@ -335,9 +330,9 @@ HTML_TEMPLATE = """
                 <span class="bg-emerald-950 border border-emerald-500 text-emerald-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold">● LIVE</span>
             </div>
 
-            <div class="text-center my-3">
-                <div class="w-20 h-20 mx-auto rounded-full purple-glow-btn flex items-center justify-center my-2">
-                    <svg class="icon-svg text-black w-8 h-8" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
+            <div class="text-center my-2">
+                <div class="w-16 h-16 mx-auto rounded-full purple-glow-btn flex items-center justify-center my-1">
+                    <svg class="icon-svg text-black w-6 h-6" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
                 </div>
                 <p id="sufia-status" class="text-xs font-bold text-purple-200 tracking-wide">মাস্টার সুফিয়া শুনছে... কথা বলুন</p>
             </div>
@@ -354,7 +349,7 @@ HTML_TEMPLATE = """
                 <div id="tv-voice-container" class="h-44 rounded-xl overflow-hidden"></div>
             </div>
 
-            <div class="flex justify-center items-center my-2">
+            <div class="flex justify-center items-center my-1">
                 <button onclick="startVoiceRecognition()" class="w-12 h-12 rounded-full purple-glow-btn text-black flex items-center justify-center font-bold">
                     <svg class="icon-svg text-black w-5 h-5" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
                 </button>
@@ -426,6 +421,17 @@ HTML_TEMPLATE = """
                 <p class="text-xs text-purple-300">User Code: SPK-800Y0BIM</p>
                 <span class="bg-purple-900/60 border border-purple-400 text-purple-200 text-xs px-3.5 py-1 rounded-full inline-block font-semibold">✨ SUFIA Engine Active</span>
             </div>
+        </div>
+
+        <!-- FIXED FLOATING NAVIGATION BAR (VISIBLE ABOVE SCREEN BOTTOM) -->
+        <div class="bottom-nav flex justify-between items-center">
+            <button onclick="navTo('screen-home')" class="text-purple-300 p-2"><svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
+            <button onclick="navTo('screen-auto')" class="text-gray-400 p-2"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg></button>
+            <button onclick="navTo('screen-voice')" class="w-12 h-12 rounded-full purple-glow-btn text-black flex items-center justify-center font-bold">
+                <svg class="icon-svg text-black w-6 h-6" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
+            </button>
+            <button onclick="navTo('screen-signal')" class="text-gray-400 p-2"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z"/></svg></button>
+            <button onclick="navTo('screen-profile')" class="text-gray-400 p-2"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></button>
         </div>
 
     </div>
