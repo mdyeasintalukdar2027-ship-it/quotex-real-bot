@@ -98,7 +98,7 @@ def analyze_real_market(symbol="EURUSD=X"):
     last = candles[-1]
     is_bullish = (last['close'] >= last['open'])
     
-    # Mathematical calculation without any random generator
+    # Pure Mathematical calculation from real live candles
     if rsi_val < 50 or ema_fast > ema_slow or is_bullish:
         signal = "CALL (BUY)"
         calculated_acc = min(98, max(86, int(88 + (50 - rsi_val) * 0.4)))
@@ -392,18 +392,18 @@ HTML_TEMPLATE = """
             </div>
         </div>
 
-        <!-- SCREEN 4: QX MANUAL SIGNAL -->
-        <div id="screen-signal" class="screen">
+        <!-- SCREEN 4: QX MANUAL SIGNAL (PERFECT SPACING & UI BALANCE) -->
+        <div id="screen-signal" class="screen flex flex-col justify-between py-1 gap-3">
             <div class="flex justify-between items-center pt-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
                 <h1 class="text-xs font-bold text-purple-200">QX Manual Signal Engine</h1>
             </div>
 
             <!-- Market Pair & Timeframe Selectors -->
-            <div class="flex gap-2">
+            <div class="flex gap-2.5 my-1">
                 <div class="w-2/3">
-                    <label class="text-[9px] text-gray-400 font-bold block mb-1">Market Pair</label>
-                    <select id="manual-pair" class="w-full bg-purple-950 text-xs p-2 rounded-xl border border-purple-800 text-white font-bold">
+                    <label class="text-[10px] text-gray-300 font-bold block mb-1">Market Pair</label>
+                    <select id="manual-pair" class="w-full bg-purple-950 text-xs p-2.5 rounded-xl border border-purple-700/60 text-white font-bold shadow-md">
                         <option value="EURUSD=X">EUR/USD (Real)</option>
                         <option value="GBPUSD=X">GBP/USD (Real)</option>
                         <option value="USDJPY=X">USD/JPY (Real)</option>
@@ -412,8 +412,8 @@ HTML_TEMPLATE = """
                     </select>
                 </div>
                 <div class="w-1/3">
-                    <label class="text-[9px] text-gray-400 font-bold block mb-1">Timeframe</label>
-                    <select id="manual-tf" class="w-full bg-purple-950 text-xs p-2 rounded-xl border border-purple-800 text-white font-bold">
+                    <label class="text-[10px] text-gray-300 font-bold block mb-1">Timeframe</label>
+                    <select id="manual-tf" class="w-full bg-purple-950 text-xs p-2.5 rounded-xl border border-purple-700/60 text-white font-bold shadow-md">
                         <option value="1M">1M</option>
                         <option value="2M">2M</option>
                         <option value="5M">5M</option>
@@ -422,19 +422,19 @@ HTML_TEMPLATE = """
             </div>
 
             <!-- Candle Time Remaining Bar -->
-            <div class="bg-black/60 border border-yellow-500/40 py-2 px-3 rounded-xl text-center">
-                <p id="manual-timer-bar" class="text-xs font-extrabold text-yellow-300">⏰ CANDLE TIME REMAINING: 60s</p>
+            <div class="bg-black/60 border border-yellow-500/50 py-2.5 px-3 rounded-xl text-center my-1 shadow-md">
+                <p id="manual-timer-bar" class="text-xs font-extrabold text-yellow-300 tracking-wide">⏰ CANDLE TIME REMAINING: 60s</p>
             </div>
 
             <!-- Scan & Predict Button -->
-            <button onclick="startManualScan()" class="scan-glow-btn text-black font-black text-sm py-3 rounded-xl w-full tracking-wide">
+            <button onclick="startManualScan()" class="scan-glow-btn text-black font-black text-sm py-3.5 rounded-xl w-full tracking-wide my-1 transition-transform active:scale-95">
                 ⚡ SCAN & PREDICT
             </button>
 
             <!-- Signal Output Box -->
-            <div class="glass-card p-4 rounded-2xl text-center border border-purple-500/40 relative">
+            <div class="glass-card p-4 rounded-2xl text-center border border-purple-500/40 my-1 flex flex-col justify-center min-h-[110px]">
                 <p class="text-[10px] text-purple-300 font-bold uppercase tracking-wider">🔮 SIGNAL GENERATED</p>
-                <h1 id="manual-sig-dir" class="text-3xl font-black text-emerald-400 my-1">PRESS SCAN TO START</h1>
+                <h1 id="manual-sig-dir" class="text-2xl font-black text-emerald-400 my-1.5">PRESS SCAN TO START</h1>
                 <p id="manual-sig-reason" class="text-[10px] text-gray-300 font-medium">Click SCAN button to trigger analysis</p>
                 
                 <div id="manual-timer-badge" class="hidden mt-2 inline-block bg-yellow-500/20 border border-yellow-400 text-yellow-300 text-[10px] px-3 py-1 rounded-full font-bold">
@@ -443,22 +443,22 @@ HTML_TEMPLATE = """
             </div>
 
             <!-- Win Rate, Accuracy, Confirm Box -->
-            <div class="grid grid-cols-3 gap-2">
-                <div class="bg-purple-950/80 p-2.5 rounded-xl border border-purple-800 text-center">
+            <div class="grid grid-cols-3 gap-2.5 my-1">
+                <div class="bg-purple-950/80 p-3 rounded-xl border border-purple-800/80 text-center shadow-md">
                     <p class="text-[9px] text-gray-400 font-bold uppercase">WIN RATE</p>
                     <p id="manual-win" class="text-xs font-black text-emerald-400 mt-1">-- %</p>
                 </div>
-                <div class="bg-purple-950/80 p-2.5 rounded-xl border border-purple-800 text-center">
+                <div class="bg-purple-950/80 p-3 rounded-xl border border-purple-800/80 text-center shadow-md">
                     <p class="text-[9px] text-gray-400 font-bold uppercase">ACCURACY</p>
                     <p id="manual-acc" class="text-xs font-black text-cyan-400 mt-1">-- %</p>
                 </div>
-                <div class="bg-purple-950/80 p-2.5 rounded-xl border border-purple-800 text-center">
+                <div class="bg-purple-950/80 p-3 rounded-xl border border-purple-800/80 text-center shadow-md">
                     <p class="text-[9px] text-gray-400 font-bold uppercase">CONFIRM</p>
                     <p id="manual-conf" class="text-xs font-black text-purple-300 mt-1">-- %</p>
                 </div>
             </div>
 
-            <p class="text-[8px] text-gray-500 text-center font-medium">This signal engine operates using price action strategy and institutional volume dynamics.</p>
+            <p class="text-[8px] text-gray-400 text-center font-medium my-1 leading-normal">This signal engine operates using price action strategy and institutional volume dynamics.</p>
         </div>
 
         <!-- SCREEN 5: USER PROFILE -->
@@ -555,7 +555,7 @@ HTML_TEMPLATE = """
             const data = await res.json();
 
             dirElem.innerText = data.signal;
-            dirElem.className = data.signal.includes("CALL") ? "text-3xl font-black text-emerald-400 my-1" : "text-3xl font-black text-red-500 my-1";
+            dirElem.className = data.signal.includes("CALL") ? "text-2xl font-black text-emerald-400 my-1" : "text-2xl font-black text-red-500 my-1";
 
             document.getElementById('manual-sig-reason').innerText = data.reason;
             document.getElementById('manual-win').innerText = data.win_rate;
