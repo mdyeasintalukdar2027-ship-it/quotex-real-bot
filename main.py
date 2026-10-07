@@ -107,19 +107,19 @@ def analyze_real_market(symbol="EURUSD=X"):
     if (rsi_val < 38 and ema_fast > ema_slow) or is_bullish_engulfing:
         signal = "CALL (BUY)"
         accuracy = "92%"
-        reason = f"RSI Oversold ({rsi_val}) + Bullish Price Action Reversal"
+        reason = f"RSI Oversold ({rsi_val}) + Bullish Reversal Signal"
     elif (rsi_val > 62 and ema_fast < ema_slow) or is_bearish_engulfing:
         signal = "PUT (SELL)"
         accuracy = "91%"
-        reason = f"RSI Overbought ({rsi_val}) + Bearish Resistance Rejection"
+        reason = f"RSI Overbought ({rsi_val}) + Bearish Rejection Signal"
     elif ema_fast > ema_slow and last['close'] >= last['open']:
         signal = "CALL (BUY)"
         accuracy = "89%"
-        reason = f"Bullish Trend Momentum (EMA 9/21 Alignment, RSI: {rsi_val})"
+        reason = f"Bullish Trend Alignment (EMA 9/21, RSI: {rsi_val})"
     elif ema_fast < ema_slow and last['close'] < last['open']:
         signal = "PUT (SELL)"
         accuracy = "88%"
-        reason = f"Bearish Trend Momentum (EMA 9/21 Alignment, RSI: {rsi_val})"
+        reason = f"Bearish Trend Alignment (EMA 9/21, RSI: {rsi_val})"
 
     return {
         "status": "success",
@@ -132,7 +132,7 @@ def analyze_real_market(symbol="EURUSD=X"):
     }
 
 # ==========================================
-# FRONTEND HTML / TAILWIND UI (EXACT FIT)
+# FRONTEND HTML / TAILWIND UI
 # ==========================================
 
 HTML_TEMPLATE = """
@@ -147,52 +147,89 @@ HTML_TEMPLATE = """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif !important; margin: 0; padding: 0; }
-        body { background: #05000a; color: #ffffff; height: 100vh; width: 100vw; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        
+        body { 
+            background: #05000a; 
+            color: #ffffff; 
+            min-height: 100vh;
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start;
+            overflow-x: hidden;
+        }
         
         .mobile-container { 
             width: 100%; 
             max-width: 420px; 
-            height: 100vh; 
+            min-height: 100vh;
             background: #080112; 
             position: relative; 
             display: flex; 
             flex-direction: column; 
-            justify-content: space-between;
-            padding: 8px 12px 10px 12px; 
-            overflow: hidden; 
+            padding: 10px 14px 80px 14px; 
         }
 
-        .glass-card { background: linear-gradient(135deg, rgba(35, 14, 62, 0.9), rgba(20, 7, 40, 0.95)); border: 1px solid rgba(168, 85, 247, 0.4); backdrop-filter: blur(16px); border-radius: 18px; }
-        .glass-pill { background: rgba(38, 16, 68, 0.85); border: 1px solid rgba(168, 85, 247, 0.45); border-radius: 999px; }
-        .purple-glow-btn { background: linear-gradient(135deg, #a855f7, #c084fc); box-shadow: 0 0 16px rgba(168, 85, 247, 0.65); }
-        .voice-card-bg { background: linear-gradient(135deg, rgba(92, 30, 142, 0.95), rgba(50, 18, 108, 0.98)); border: 1px solid rgba(192, 132, 252, 0.55); position: relative; overflow: hidden; }
+        .glass-card { 
+            background: linear-gradient(135deg, rgba(35, 14, 62, 0.9), rgba(20, 7, 40, 0.95)); 
+            border: 1px solid rgba(168, 85, 247, 0.4); 
+            backdrop-filter: blur(16px); 
+            border-radius: 18px; 
+        }
+        
+        .glass-pill { 
+            background: rgba(38, 16, 68, 0.85); 
+            border: 1px solid rgba(168, 85, 247, 0.45); 
+            border-radius: 999px; 
+        }
+        
+        .purple-glow-btn { 
+            background: linear-gradient(135deg, #a855f7, #c084fc); 
+            box-shadow: 0 0 16px rgba(168, 85, 247, 0.65); 
+        }
+        
+        .voice-card-bg { 
+            background: linear-gradient(135deg, rgba(92, 30, 142, 0.95), rgba(50, 18, 108, 0.98)); 
+            border: 1px solid rgba(192, 132, 252, 0.55); 
+            position: relative; 
+            overflow: hidden; 
+        }
         
         .bottom-nav { 
-            width: 100%;
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 28px);
+            max-width: 392px;
             background: rgba(24, 11, 44, 0.98); 
             border: 1px solid rgba(168, 85, 247, 0.5); 
             backdrop-filter: blur(20px); 
             border-radius: 999px; 
-            padding: 6px 16px; 
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.8);
+            padding: 8px 16px; 
+            box-shadow: 0 -4px 25px rgba(0,0,0,0.9);
+            z-index: 9999;
         }
 
         @keyframes waveAnim { 0%, 100% { height: 8px; } 50% { height: 24px; } }
         .wave-bar { width: 3.5px; background: #f3e8ff; border-radius: 4px; animation: waveAnim 1.2s infinite ease-in-out; }
-        .wave-bar:nth-child(2) { animation-delay: 0.1s; } .wave-bar:nth-child(3) { animation-delay: 0.2s; }
-        .wave-bar:nth-child(4) { animation-delay: 0.3s; } .wave-bar:nth-child(5) { animation-delay: 0.4s; } .wave-bar:nth-child(6) { animation-delay: 0.5s; }
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; } 
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; } 
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; } 
+        .wave-bar:nth-child(6) { animation-delay: 0.5s; }
         
-        .screen { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: space-between; }
+        .screen { display: none; width: 100%; flex-direction: column; gap: 10px; }
         .screen.active { display: flex; }
         .icon-svg { width: 16px; height: 16px; fill: currentColor; display: inline-block; vertical-align: middle; }
     </style>
 </head>
 <body>
     <div class="mobile-container">
+        
         <!-- SCREEN 1: HOME PAGE -->
-        <div id="screen-home" class="screen active flex-col justify-between py-1">
+        <div id="screen-home" class="screen active">
             <!-- Header -->
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center pt-1">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-red-950 border border-red-500/70 flex items-center justify-center shadow-md">
                         <svg class="icon-svg text-red-400" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2v1h1a3 3 0 0 1 3 3v2h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-1v1a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3v-1H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h1V7a3 3 0 0 1 3-3h1V4a2 2 0 0 1 2-2zm-3 7H7v2h2V9zm8 0h-2v2h2V9z"/></svg>
@@ -208,7 +245,7 @@ HTML_TEMPLATE = """
             </div>
 
             <!-- Title Header -->
-            <div>
+            <div class="mt-1">
                 <h1 class="text-lg font-black text-white tracking-tight leading-tight">Real AI Trading Engine</h1>
                 <h1 class="text-lg font-black text-purple-300 tracking-tight leading-tight">Live Market Analysis</h1>
             </div>
@@ -226,10 +263,10 @@ HTML_TEMPLATE = """
                 </button>
             </div>
 
-            <p class="text-[10px] font-extrabold text-purple-300 uppercase tracking-wider">START CREATING</p>
+            <p class="text-[10px] font-extrabold text-purple-300 uppercase tracking-wider mt-1">START CREATING</p>
 
             <!-- Voice Studio Card -->
-            <div onclick="navTo('screen-voice')" class="voice-card-bg p-3.5 rounded-2xl cursor-pointer shadow-xl flex flex-col justify-center h-28">
+            <div onclick="navTo('screen-voice')" class="voice-card-bg p-4 rounded-2xl cursor-pointer shadow-xl flex flex-col justify-center">
                 <div class="flex justify-between items-center mb-1">
                     <div class="w-8 h-8 rounded-full bg-purple-900/80 border border-purple-300/60 flex items-center justify-center shadow">
                         <svg class="icon-svg text-purple-100" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
@@ -242,9 +279,9 @@ HTML_TEMPLATE = """
                 <p class="text-[10px] text-purple-200/90 font-medium">Real-time Trading Voice Engine</p>
             </div>
 
-            <!-- 2 Grid Action Cards (Height adjusted) -->
+            <!-- 2 Grid Action Cards -->
             <div class="grid grid-cols-2 gap-2.5">
-                <div onclick="navTo('screen-auto')" class="glass-card p-3 rounded-xl cursor-pointer relative flex flex-col justify-between h-32">
+                <div onclick="navTo('screen-auto')" class="glass-card p-3 rounded-xl cursor-pointer relative flex flex-col justify-between h-36">
                     <div class="w-8 h-8 rounded-lg bg-purple-900/70 border border-purple-500/50 flex items-center justify-center">
                         <svg class="icon-svg text-purple-200" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
                     </div>
@@ -254,7 +291,7 @@ HTML_TEMPLATE = """
                     </div>
                 </div>
 
-                <div onclick="navTo('screen-signal')" class="glass-card p-3 rounded-xl cursor-pointer relative flex flex-col justify-between h-32">
+                <div onclick="navTo('screen-signal')" class="glass-card p-3 rounded-xl cursor-pointer relative flex flex-col justify-between h-36">
                     <div class="w-8 h-8 rounded-lg bg-purple-900/70 border border-purple-500/50 flex items-center justify-center">
                         <svg class="icon-svg text-purple-200" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z"/></svg>
                     </div>
@@ -264,26 +301,17 @@ HTML_TEMPLATE = """
                     </div>
                 </div>
             </div>
-
-            <!-- Bottom Nav Bar -->
-            <div class="bottom-nav flex justify-between items-center">
-                <button onclick="navTo('screen-home')" class="text-purple-300 p-1"><svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
-                <button onclick="navTo('screen-auto')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg></button>
-                <button onclick="navTo('screen-voice')" class="w-9 h-9 rounded-full purple-glow-btn text-black flex items-center justify-center font-bold"><svg class="icon-svg text-black" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg></button>
-                <button onclick="navTo('screen-signal')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z"/></svg></button>
-                <button onclick="navTo('screen-profile')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></button>
-            </div>
         </div>
 
         <!-- SCREEN 2: VOICE STUDIO -->
-        <div id="screen-voice" class="screen flex-col justify-between py-1">
-            <div class="flex justify-between items-center">
+        <div id="screen-voice" class="screen">
+            <div class="flex justify-between items-center pt-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
                 <span class="text-xs font-bold text-purple-200">SUFIA VOICE STUDIO</span>
                 <span class="bg-emerald-950 border border-emerald-500 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full font-bold">● LIVE DATA</span>
             </div>
 
-            <div class="text-center my-0.5">
+            <div class="text-center">
                 <div class="w-16 h-16 mx-auto rounded-full purple-glow-btn flex items-center justify-center my-1">
                     <svg class="icon-svg text-black w-6 h-6" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
                 </div>
@@ -291,7 +319,7 @@ HTML_TEMPLATE = """
             </div>
 
             <!-- Live Chart Box -->
-            <div class="glass-card p-2.5 rounded-xl my-auto">
+            <div class="glass-card p-2.5 rounded-xl">
                 <div class="flex justify-between items-center mb-1.5">
                     <span class="text-[9px] font-bold text-emerald-400">● LIVE TRADINGVIEW CHART</span>
                     <select id="voice-chart-pair" onchange="renderVoiceChart()" class="bg-purple-950 text-[10px] p-1 rounded-lg border border-purple-500/50 text-white font-bold outline-none">
@@ -303,30 +331,21 @@ HTML_TEMPLATE = """
                 <div id="tv-voice-container" class="h-48 rounded-lg overflow-hidden"></div>
             </div>
 
-            <div class="flex justify-center items-center my-0.5">
+            <div class="flex justify-center items-center">
                 <button onclick="startVoiceRecognition()" class="w-12 h-12 rounded-full purple-glow-btn text-black flex items-center justify-center font-bold shadow-lg">
                     <svg class="icon-svg text-black w-5 h-5" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
                 </button>
             </div>
-
-            <!-- Bottom Nav Bar -->
-            <div class="bottom-nav flex justify-between items-center">
-                <button onclick="navTo('screen-home')" class="text-purple-300 p-1"><svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
-                <button onclick="navTo('screen-auto')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg></button>
-                <button onclick="navTo('screen-voice')" class="w-9 h-9 rounded-full purple-glow-btn text-black flex items-center justify-center font-bold"><svg class="icon-svg text-black" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg></button>
-                <button onclick="navTo('screen-signal')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z"/></svg></button>
-                <button onclick="navTo('screen-profile')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></button>
-            </div>
         </div>
 
         <!-- SCREEN 3: AUTO TRADE -->
-        <div id="screen-auto" class="screen flex-col justify-between py-1">
-            <div class="flex justify-between items-center">
+        <div id="screen-auto" class="screen">
+            <div class="flex justify-between items-center pt-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
                 <h1 class="text-xs font-bold text-purple-200">Real Auto Technical Scan</h1>
             </div>
 
-            <div class="glass-card p-4 space-y-3 my-auto">
+            <div class="glass-card p-4 space-y-3">
                 <select id="auto-pair" class="w-full bg-purple-950 text-xs p-2.5 rounded-xl border border-purple-500/50 text-white font-bold">
                     <option value="EURUSD=X">EUR/USD (Real Live)</option>
                     <option value="GBPUSD=X">GBP/USD (Real Live)</option>
@@ -343,25 +362,16 @@ HTML_TEMPLATE = """
                     <p id="auto-res-reason" class="text-[9px] text-gray-300 font-medium">Scanning Live Candle Analytics...</p>
                 </div>
             </div>
-
-            <!-- Bottom Nav Bar -->
-            <div class="bottom-nav flex justify-between items-center">
-                <button onclick="navTo('screen-home')" class="text-purple-300 p-1"><svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
-                <button onclick="navTo('screen-auto')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg></button>
-                <button onclick="navTo('screen-voice')" class="w-9 h-9 rounded-full purple-glow-btn text-black flex items-center justify-center font-bold"><svg class="icon-svg text-black" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg></button>
-                <button onclick="navTo('screen-signal')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z"/></svg></button>
-                <button onclick="navTo('screen-profile')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></button>
-            </div>
         </div>
 
         <!-- SCREEN 4: LIVE SIGNAL -->
-        <div id="screen-signal" class="screen flex-col justify-between py-1">
-            <div class="flex justify-between items-center">
+        <div id="screen-signal" class="screen">
+            <div class="flex justify-between items-center pt-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
                 <h1 class="text-xs font-bold text-purple-200">Real-Time Market Signal</h1>
             </div>
 
-            <div class="glass-card p-4 space-y-3 my-auto">
+            <div class="glass-card p-4 space-y-3">
                 <select id="signal-pair" class="w-full bg-purple-950 text-xs p-2.5 rounded-xl border border-purple-500/50 text-white font-bold">
                     <option value="EURUSD=X">EUR/USD (Real Live)</option>
                     <option value="GBPUSD=X">GBP/USD (Real Live)</option>
@@ -377,25 +387,16 @@ HTML_TEMPLATE = """
                     <p id="sig-reason" class="text-[9px] text-gray-300 font-medium">Press Analyze button for Real Signal</p>
                 </div>
             </div>
-
-            <!-- Bottom Nav Bar -->
-            <div class="bottom-nav flex justify-between items-center">
-                <button onclick="navTo('screen-home')" class="text-purple-300 p-1"><svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
-                <button onclick="navTo('screen-auto')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg></button>
-                <button onclick="navTo('screen-voice')" class="w-9 h-9 rounded-full purple-glow-btn text-black flex items-center justify-center font-bold"><svg class="icon-svg text-black" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg></button>
-                <button onclick="navTo('screen-signal')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z"/></svg></button>
-                <button onclick="navTo('screen-profile')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></button>
-            </div>
         </div>
 
         <!-- SCREEN 5: USER PROFILE -->
-        <div id="screen-profile" class="screen flex-col justify-between py-1">
-            <div class="flex justify-between items-center">
+        <div id="screen-profile" class="screen">
+            <div class="flex justify-between items-center pt-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
                 <h1 class="text-xs font-bold text-purple-200">User Profile</h1>
             </div>
 
-            <div class="glass-card p-5 text-center space-y-2 my-auto">
+            <div class="glass-card p-5 text-center space-y-2">
                 <div class="w-14 h-14 rounded-full bg-red-950 border-2 border-red-500 mx-auto flex items-center justify-center">
                     <svg class="icon-svg text-red-400 w-7 h-7" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2v1h1a3 3 0 0 1 3 3v2h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-1v1a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3v-1H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h1V7a3 3 0 0 1 3-3h1V4a2 2 0 0 1 2-2zm-3 7H7v2h2V9zm8 0h-2v2h2V9z"/></svg>
                 </div>
@@ -403,15 +404,15 @@ HTML_TEMPLATE = """
                 <p class="text-[10px] text-purple-300">User Code: SPK-800Y0BIM</p>
                 <span class="bg-purple-900/60 border border-purple-400 text-purple-200 text-[10px] px-3 py-0.5 rounded-full inline-block font-semibold">✨ SUFIA Engine Active</span>
             </div>
+        </div>
 
-            <!-- Bottom Nav Bar -->
-            <div class="bottom-nav flex justify-between items-center">
-                <button onclick="navTo('screen-home')" class="text-purple-300 p-1"><svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
-                <button onclick="navTo('screen-auto')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg></button>
-                <button onclick="navTo('screen-voice')" class="w-9 h-9 rounded-full purple-glow-btn text-black flex items-center justify-center font-bold"><svg class="icon-svg text-black" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg></button>
-                <button onclick="navTo('screen-signal')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z"/></svg></button>
-                <button onclick="navTo('screen-profile')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></button>
-            </div>
+        <!-- FIXED BOTTOM NAVIGATION BAR -->
+        <div class="bottom-nav flex justify-between items-center">
+            <button onclick="navTo('screen-home')" class="text-purple-300 p-1"><svg class="icon-svg text-purple-300" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
+            <button onclick="navTo('screen-auto')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg></button>
+            <button onclick="navTo('screen-voice')" class="w-9 h-9 rounded-full purple-glow-btn text-black flex items-center justify-center font-bold"><svg class="icon-svg text-black" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg></button>
+            <button onclick="navTo('screen-signal')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z"/></svg></button>
+            <button onclick="navTo('screen-profile')" class="text-gray-400 p-1"><svg class="icon-svg text-gray-400" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></button>
         </div>
 
     </div>
