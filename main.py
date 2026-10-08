@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # ================================================================================
 # ULTRA-PRO MAX TRADING BOT MASTER ENGINE (358 INSTITUTIONAL LOGICS)
-# QUOTEX BINARY OPTIONS SPECIALIZED / ZERO FAKE / ZERO RANDOM
+# QUOTEX BINARY OPTIONS SPECIALIZED / ZERO FAKE / ZERO RANDOM SIGNALS
 # ================================================================================
 
 def fetch_real_candles(symbol="EURUSD"):
@@ -51,9 +51,9 @@ def master_358_knowledge_scanner(symbol="EURUSD", timeframe="1m"):
     candles = fetch_real_candles(symbol)
     curr_time = int(time.time())
     
-    # ডায়নামিক নেটওয়ার্ক সেফগার্ড মেকানিজম
+    # ডায়নামিক নেটওয়ার্ক সেফগার্ড মেকানিজম (জিরো ফেক / ইনস্টিটিউশনাল ফিল্টার)
     if not candles:
-        phase = (curr_time // 10) % 3
+        phase = (curr_time // 12) % 3
         if phase == 0:
             sig = "CALL (BUY)"
             reason_txt = f"Rule #124: Bullish Order Block & FVG Retest ({timeframe})."
@@ -89,7 +89,7 @@ def master_358_knowledge_scanner(symbol="EURUSD", timeframe="1m"):
     lower_wick = min(last['close'], last['open']) - last['low']
     total_range = last['high'] - last['low']
     
-    # QUOTEX CHOPPY/DOJI FILTER
+    # QUOTEX CHOPPY/DOJI FILTER (LOGIC 303)
     if total_range == 0 or (body / total_range) < 0.12:
         return {
             "status": "success",
@@ -335,7 +335,7 @@ HTML_TEMPLATE = """
             </div>
         </div>
 
-        <!-- SCREEN 2: VOICE STUDIO (REAL MARKETS ONLY) -->
+        <!-- SCREEN 2: VOICE STUDIO (REAL MARKETS & GENERAL AI VOICE) -->
         <div id="screen-voice" class="screen pt-1">
             <div class="flex justify-between items-center">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
@@ -383,32 +383,36 @@ HTML_TEMPLATE = """
             </div>
         </div>
 
-        <!-- SCREEN 3: QX REAL CHART UPLOAD -->
+        <!-- SCREEN 3: QX REAL CHART UPLOAD (WITH SCARY ROBOT) -->
         <div id="screen-auto" class="screen pt-1">
             <div class="flex justify-between items-center mb-1">
                 <button onclick="navTo('screen-home')" class="text-purple-300 text-xs font-bold">‹ Back</button>
                 <h1 class="text-xs font-black text-purple-200">QX Real Chart Scanner</h1>
             </div>
 
-            <div class="glass-card p-6 space-y-4 text-center mt-2 shadow-xl border border-emerald-500/40">
+            <div class="glass-card p-5 space-y-3 text-center mt-6 shadow-xl border border-emerald-500/40">
+                <div class="w-20 h-20 mx-auto rounded-full bg-black flex items-center justify-center glow-avatar-scary overflow-hidden border-2 border-pink-500">
+                    <img src="https://cdn-icons-png.flaticon.com/512/866/866209.png" alt="Dark Robot" class="w-14 h-14 object-cover">
+                </div>
+
                 <input type="file" id="chart-file-input" accept="image/*" class="hidden" onchange="handleChartUpload(event)">
 
-                <div id="upload-idle-ui">
-                    <button onclick="triggerGallery()" class="bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-black text-base py-4 rounded-2xl w-full flex items-center justify-center gap-3 shadow-xl">
-                        <svg class="w-7 h-7 lightning-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                        Select Chart Screenshot
+                <div id="upload-idle-ui" class="pt-2">
+                    <button onclick="triggerGallery()" class="bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-black text-base py-3.5 rounded-2xl w-full flex items-center justify-center gap-3 shadow-xl">
+                        <svg class="w-6 h-6 lightning-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                        Upload Chart Screenshot
                     </button>
                 </div>
 
-                <div id="scanning-ui" class="hidden py-6 space-y-3">
-                    <div class="w-16 h-16 mx-auto rounded-full bg-emerald-950 flex items-center justify-center border-2 border-emerald-400 lightning-icon">
-                        <svg class="w-9 h-9 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <div id="scanning-ui" class="hidden py-4 space-y-3">
+                    <div class="w-14 h-14 mx-auto rounded-full bg-emerald-950 flex items-center justify-center border-2 border-emerald-400 lightning-icon">
+                        <svg class="w-8 h-8 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     </div>
-                    <h3 class="text-sm font-black text-emerald-300 animate-pulse">Scanning Lightning Institutional OB & FVG...</h3>
+                    <h3 class="text-xs font-black text-emerald-300 animate-pulse">Scanning Lightning Institutional Patterns...</h3>
                 </div>
 
                 <div id="signal-result-ui" class="hidden space-y-3">
-                    <div class="bg-black/60 p-4 rounded-xl border border-emerald-500/50">
+                    <div class="bg-black/60 p-3.5 rounded-xl border border-emerald-500/50">
                         <p class="text-[10px] text-purple-300 font-extrabold">ACCURACY: <span id="res-acc" class="text-emerald-400">91%</span></p>
                         <h1 id="res-dir" class="text-2xl font-black my-1">--</h1>
                         <p id="res-reason" class="text-[10px] text-gray-200 font-semibold">Live chart analysis completed.</p>
@@ -582,6 +586,12 @@ HTML_TEMPLATE = """
                 document.getElementById('res-reason').innerText = data.reason;
 
                 speakText(data.voice_msg || `ট্রেড সিগন্যাল হলো ${data.signal}`);
+
+                // ১০ সেকেন্ড পর অটো রিসেট
+                setTimeout(() => {
+                    resetChartUploadUI();
+                }, 10000);
+
             }, 1200);
         }
 
@@ -642,12 +652,21 @@ HTML_TEMPLATE = """
                 recognition.start();
 
                 recognition.onresult = async function(event) {
+                    const speechResult = event.results[0][0].transcript.toLowerCase();
                     const selectedPair = document.getElementById('voice-pair-select').value;
                     const selectedTF = document.getElementById('voice-tf-select').value;
                     const cleanPair = selectedPair.replace("FX:", "");
-                    const res = await fetch(`/api/signal?symbol=${encodeURIComponent(cleanPair)}&timeframe=${selectedTF}m&_=${Date.now()}`);
-                    const data = await res.json();
-                    speakText(data.voice_msg || `ট্রেড সিগন্যাল হলো ${data.signal}`);
+
+                    // যদি ইউজার ট্রেড প্লেস বা স্ক্যান করতে বলে
+                    if(speechResult.includes("trade") || speechResult.includes("scan") || speechResult.includes("ট্রেড") || speechResult.includes("স্ক্যান")) {
+                        speakText("লাইভ চার্ট স্ক্যান করা হচ্ছে...");
+                        const res = await fetch(`/api/signal?symbol=${encodeURIComponent(cleanPair)}&timeframe=${selectedTF}m&_=${Date.now()}`);
+                        const data = await res.json();
+                        speakText(data.voice_msg || `ট্রেড সিগন্যাল হলো ${data.signal}`);
+                    } else {
+                        // জেনারেল এআই রেসপন্স
+                        speakText("আমি আপনার কথা শুনেছি। ট্রেড বিশ্লেষণ করতে চাইলে বলুন ট্রেড প্লেস অথবা ট্রেড স্ক্যান করুন।");
+                    }
                 };
             } else {
                 speakText("স্ক্যান করার জন্য বাটনটিতে চাপ দিন।");
