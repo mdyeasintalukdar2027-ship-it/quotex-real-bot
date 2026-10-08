@@ -51,7 +51,7 @@ def master_361_knowledge_scanner(symbol="EURUSD", timeframe="1m"):
     candles = fetch_real_candles(symbol)
     curr_time = int(time.time())
     
-    # নেটওয়ার্ক লেটেন্সি প্রতিরোধক ডায়নামিক ফেজ মেকানিজম
+    # ডায়নামিক নেটওয়ার্ক সেফগার্ড মেকানিজম
     if not candles:
         phase = (curr_time // 10) % 3
         if phase == 0:
@@ -176,12 +176,12 @@ HTML_TEMPLATE = """
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         @keyframes borderFastChange {
-            0% { border-color: #ff0055; box-shadow: inset 0 0 12px rgba(255, 0, 85, 0.5), 0 0 12px rgba(255, 0, 85, 0.5); }
-            20% { border-color: #00f2fe; box-shadow: inset 0 0 12px rgba(0, 242, 254, 0.5), 0 0 12px rgba(0, 242, 254, 0.5); }
-            40% { border-color: #a855f7; box-shadow: inset 0 0 12px rgba(168, 85, 247, 0.5), 0 0 12px rgba(168, 85, 247, 0.5); }
-            60% { border-color: #10b981; box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.5), 0 0 12px rgba(16, 185, 129, 0.5); }
-            80% { border-color: #f59e0b; box-shadow: inset 0 0 12px rgba(245, 158, 11, 0.5), 0 0 12px rgba(245, 158, 11, 0.5); }
-            100% { border-color: #ff0055; box-shadow: inset 0 0 12px rgba(255, 0, 85, 0.5), 0 0 12px rgba(255, 0, 85, 0.5); }
+            0% { border-color: #ff0055; box-shadow: inset 0 0 10px rgba(255, 0, 85, 0.5), 0 0 10px rgba(255, 0, 85, 0.5); }
+            20% { border-color: #00f2fe; box-shadow: inset 0 0 10px rgba(0, 242, 254, 0.5), 0 0 10px rgba(0, 242, 254, 0.5); }
+            40% { border-color: #a855f7; box-shadow: inset 0 0 10px rgba(168, 85, 247, 0.5), 0 0 10px rgba(168, 85, 247, 0.5); }
+            60% { border-color: #10b981; box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.5), 0 0 10px rgba(16, 185, 129, 0.5); }
+            80% { border-color: #f59e0b; box-shadow: inset 0 0 10px rgba(245, 158, 11, 0.5), 0 0 10px rgba(245, 158, 11, 0.5); }
+            100% { border-color: #ff0055; box-shadow: inset 0 0 10px rgba(255, 0, 85, 0.5), 0 0 10px rgba(255, 0, 85, 0.5); }
         }
 
         body {
@@ -204,7 +204,7 @@ HTML_TEMPLATE = """
             position: relative;
             display: flex;
             flex-direction: column;
-            padding: 10px 12px 68px 12px;
+            padding: 10px 12px 62px 12px;
             overflow: hidden;
             border: 2px solid #a855f7;
             animation: borderFastChange 12s infinite ease-in-out;
@@ -256,7 +256,7 @@ HTML_TEMPLATE = """
         .lightning-icon { animation: lightningPulse 1.5s infinite ease-in-out; }
 
         .glass-pill { background: rgba(38, 14, 70, 0.75); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 999px; }
-        .bottom-nav { position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%); width: calc(100% - 24px); max-width: 396px; background: rgba(18, 6, 35, 0.98); border: 1.5px solid rgba(168, 85, 247, 0.45); backdrop-filter: blur(20px); border-radius: 999px; padding: 7px 16px; box-shadow: 0 -5px 25px rgba(0,0,0,0.95); z-index: 9999; }
+        .bottom-nav { position: fixed; bottom: 6px; left: 50%; transform: translateX(-50%); width: calc(100% - 24px); max-width: 396px; background: rgba(18, 6, 35, 0.98); border: 1.5px solid rgba(168, 85, 247, 0.45); backdrop-filter: blur(20px); border-radius: 999px; padding: 7px 16px; box-shadow: 0 -5px 25px rgba(0,0,0,0.95); z-index: 9999; }
         .screen { display: none; width: 100%; height: 100%; flex-direction: column; gap: 11px; overflow-y: auto; }
         .screen.active { display: flex; }
         .icon-svg { width: 18px; height: 18px; fill: currentColor; display: inline-block; vertical-align: middle; }
@@ -299,7 +299,7 @@ HTML_TEMPLATE = """
                 </button>
             </div>
 
-            <div onclick="navTo('screen-voice')" class="glass-card p-4 rounded-2xl cursor-pointer shadow-xl flex flex-col justify-between h-28 border border-cyan-500/40">
+            <div onclick="navTo('screen-voice')" class="glass-card p-4 rounded-2xl cursor-pointer shadow-xl flex flex-col justify-between h-30 border border-cyan-500/40">
                 <div class="flex justify-between items-start">
                     <div class="w-8 h-8 rounded-full bg-cyan-950/80 flex items-center justify-center border border-cyan-400 shadow-md">
                         <svg class="icon-svg text-cyan-300" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
@@ -312,7 +312,7 @@ HTML_TEMPLATE = """
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 h-36">
+            <div class="grid grid-cols-2 gap-3 h-40">
                 <div onclick="navTo('screen-auto')" class="glass-card p-3.5 rounded-2xl cursor-pointer flex flex-col justify-between h-full border-emerald-500/40">
                     <div class="w-7 h-7 rounded-full bg-emerald-950/80 flex items-center justify-center border border-emerald-400 shadow-md">
                         <svg class="icon-svg text-emerald-300" viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"/></svg>
